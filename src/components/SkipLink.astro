@@ -1,0 +1,11 @@
+---
+// "Skip the walkthrough →" / "Skip animation →": jumps past the motion to the content.
+interface Props {
+  href: string;
+  label?: string;
+}
+
+const { href, label = 'Skip the walkthrough →' } = Astro.props;
+---
+
+<a href={href} class="label inline-block underline-offset-4 hover:underline">{label}</a>

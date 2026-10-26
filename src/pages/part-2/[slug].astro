@@ -1,0 +1,129 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import FactCard from '../../components/FactCard.astro';
+import PrevNext from '../../components/PrevNext.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
+import { getAppendices, getPart2, pad } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const works = await getPart2();
+  const appendices = await getAppendices();
+  return works.map((work, i) => ({
+    params: { slug: work.id },
+    props: {
+      work,
+      total: works.length,
+      prev: works[i - 1],
+      next: works[i + 1],
+      appendix: appendices.find((a) => a.data.number === work.data.number),
+    },
+  }));
+}
+
+const { work, total, prev, next, appendix } = Astro.props;
+const { Content } = await render(work);
+const [hero, ...gallery] = work.data.media;
+const style = work.data.gallery_style;
+const link = (w?: typeof work) => w && { href: `/part-2/${w.id}`, label: w.data.title };
+
+const galleryClass = {
+  masonry: 'columns-1 gap-4 sm:columns-2 [&>li]:mb-4 [&>li]:break-inside-avoid',
+  'contact-sheet': 'grid grid-cols-2 gap-4 sm:grid-cols-3',
+  carousel: 'flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 [&>li]:w-4/5 [&>li]:shrink-0 [&>li]:snap-start sm:[&>li]:w-1/2',
+  grid: 'grid gap-4 sm:grid-cols-2',
+}[style];
+---
+
+<Layout title={work.data.title} room={3}>
+  <article>
+    <!-- HERO -->
+    <header class="pt-32">
+      <p class="label">{pad(work.data.number)} / {pad(total)}</p>
+      <h1 class="mt-6 font-display text-6xl leading-[0.95] sm:text-8xl lg:text-9xl">{work.data.title}</h1>
+      {work.data.type && <p class="label mt-6">{work.data.type}</p>}
+      <a href={hero.src} data-lightbox class="mt-12 block">
+        <img src={hero.src} alt={hero.alt} class="max-h-[90svh] w-full object-contain" />
+      </a>
+    </header>
+
+    <div class="mt-24 grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <div><FactCard work={work.data} /></div>
+
+      <div class="space-y-24">
+        <div class="prose-body max-w-prose"><Content /></div>
+
+        <!-- PROCESS STRIP -->
+        {
+          work.data.process.length > 0 && (
+            <section aria-labelledby="process-heading">
+              <h2 id="process-heading" class="label">( Process )</h2>
+              <ol class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                {work.data.process.map((step) => (
+                  <li>
+                    <a href={step.src} data-lightbox>
+                      <img src={step.src} alt={step.alt} loading="lazy" class="aspect-square w-full object-cover" />
+                    </a>
+                    {step.date && <p class="label mt-2 text-muted">{step.date}</p>}
+                    {step.caption && <p class="mt-1">{step.caption}</p>}
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )
+        }
+
+        <!-- SUB-GALLERY -->
+        {
+          gallery.length > 0 && (
+            <section aria-labelledby="gallery-heading">
+              <h2 id="gallery-heading" class="label">( The series )</h2>
+              <ul
+                class:list={['mt-6', galleryClass]}
+                tabindex={style === 'carousel' ? 0 : undefined}
+                aria-label={style === 'carousel' ? 'Scrollable gallery' : undefined}
+              >
+                {gallery.map((img) => (
+                  <li>
+                    <a href={img.src} data-lightbox class="block">
+                      <img src={img.src} alt={img.alt} loading="lazy" decoding="async" class="w-full" />
+                    </a>
+                    {img.details && <p class="label mt-2">{img.details.join(' / ')}</p>}
+                    {img.caption && <p class="mt-1">{img.caption}</p>}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        {
+          work.data.videos.length > 0 && (
+            <section aria-labelledby="video-heading">
+              <h2 id="video-heading" class="label">( Video )</h2>
+              <div class="mt-6 space-y-12">
+                {work.data.videos.map((v) => (
+                  <VideoEmbed {...v} />
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        <!-- PROOF LINK -->
+        {
+          appendix && (
+            <a
+              href={`/appendices/${appendix.data.number}`}
+              class="block border border-ink p-8 font-display text-3xl hover:bg-ink hover:text-wall sm:text-5xl"
+            >
+              See the process evidence → Appendix {appendix.data.number}
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </article>
+
+  <PrevNext prev={link(prev)} next={link(next)} back={{ href: '/part-2', label: '↑ Back to the wing' }} />
+</Layout>

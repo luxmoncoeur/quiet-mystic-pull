@@ -1,0 +1,62 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import MuseumLabel from '../../components/MuseumLabel.astro';
+import PrevNext from '../../components/PrevNext.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
+import { getPart1 } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const works = await getPart1();
+  return works.map((work, i) => ({
+    params: { slug: work.id },
+    props: { work, prev: works[i - 1], next: works[i + 1] },
+  }));
+}
+
+const { work, prev, next } = Astro.props;
+const { Content } = await render(work);
+const [main, ...extras] = work.data.media;
+const link = (w?: typeof work) => w && { href: `/part-1/${w.id}`, label: w.data.title };
+---
+
+<Layout title={work.data.title} room={2}>
+  <article class="pt-32">
+    <a href={main.src} data-lightbox class="block">
+      <img src={main.src} alt={main.alt} class="mx-auto max-h-[85svh] w-auto" />
+    </a>
+
+    {
+      extras.length > 0 && (
+        <ul class="mt-6 flex gap-4 overflow-x-auto pb-2" aria-label="More photos">
+          {extras.map((img) => (
+            <li class="shrink-0">
+              <a href={img.src} data-lightbox>
+                <img src={img.src} alt={img.alt} loading="lazy" class="h-28 w-auto sm:h-36" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      work.data.videos.length > 0 && (
+        <div class="mt-12 grid gap-8 md:grid-cols-2">
+          {work.data.videos.map((v) => (
+            <VideoEmbed {...v} />
+          ))}
+        </div>
+      )
+    }
+
+    <div class="mt-16 grid gap-10 lg:grid-cols-2">
+      <MuseumLabel work={work.data} heading="h1" />
+      <div class="prose-body max-w-prose lg:pt-4">
+        <Content />
+      </div>
+    </div>
+  </article>
+
+  <PrevNext prev={link(prev)} next={link(next)} back={{ href: '/part-1', label: '↑ Back to the wing' }} />
+</Layout>

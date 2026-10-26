@@ -1,0 +1,51 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import SkipLink from '../../components/SkipLink.astro';
+import { wings } from '../../data/site';
+import { getPart2, pad } from '../../lib/content';
+
+const works = await getPart2();
+const wing = wings[2];
+const total = pad(works.length);
+---
+
+<Layout title={`Part ${wing.numeral}: ${wing.title}`} room={3}>
+  <SectionHeader
+    numeral={wing.numeral}
+    title={wing.title}
+    line={`${works.length} works, made for this portfolio, mostly in forms new to me.`}
+  >
+    <div class="mt-8"><SkipLink href="#works" label="Skip animation →" /></div>
+  </SectionHeader>
+
+  {/* TODO (motion step): each card pins while the next slides up over it. */}
+  <ol id="works" class="scroll-mt-24 space-y-8">
+    {
+      works.map((work) => {
+        const [hero] = work.data.media;
+        return (
+          <li class="flex min-h-svh flex-col border-t border-ink py-8">
+            <a href={`/part-2/${work.id}`} class="group flex flex-1 flex-col gap-6">
+              <div class="flex flex-wrap items-baseline justify-between gap-4">
+                <p class="font-display text-6xl leading-none sm:text-8xl">
+                  {pad(work.data.number)} <span class="text-muted">/ {total}</span>
+                </p>
+                <span class="tag">{work.data.familiar ? 'Familiar practice' : 'New to me'}</span>
+              </div>
+              <div>
+                <h2 class="font-display text-4xl leading-tight group-hover:underline sm:text-6xl">{work.data.title}</h2>
+                {work.data.type && <p class="label mt-2">{work.data.type}</p>}
+              </div>
+              <img src={hero.src} alt={hero.alt} loading="lazy" decoding="async" class="max-h-[65svh] w-full object-cover" />
+            </a>
+          </li>
+        );
+      })
+    }
+  </ol>
+
+  <a href="/reflection" class="mt-32 block border-y border-ink py-12 text-center font-display text-4xl hover:text-accent sm:text-6xl">
+    Continue to the Reflection →
+  </a>
+</Layout>

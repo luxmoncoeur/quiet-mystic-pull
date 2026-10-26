@@ -1,0 +1,43 @@
+---
+// Previous / next in exhibition order, plus an optional "back" link.
+interface Link {
+  href: string;
+  label: string;
+}
+
+interface Props {
+  prev?: Link;
+  next?: Link;
+  back?: Link;
+}
+
+const { prev, next, back } = Astro.props;
+---
+
+<nav aria-label="More works" class="mt-24 border-t border-ink pt-6">
+  <div class="grid gap-6 sm:grid-cols-3">
+    <div>
+      {
+        prev && (
+          <a href={prev.href} class="group block">
+            <span class="label text-muted">← Previous</span>
+            <span class="block font-display text-2xl group-hover:underline">{prev.label}</span>
+          </a>
+        )
+      }
+    </div>
+    <div class="sm:text-center">
+      {back && <a href={back.href} class="label underline-offset-4 hover:underline">{back.label}</a>}
+    </div>
+    <div class="sm:text-right">
+      {
+        next && (
+          <a href={next.href} class="group block">
+            <span class="label text-muted">Next →</span>
+            <span class="block font-display text-2xl group-hover:underline">{next.label}</span>
+          </a>
+        )
+      }
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,40 @@
+---
+import { getEntry, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { wings } from '../data/site';
+
+const wing = wings[3];
+const entry = await getEntry('reflection', 'reflection');
+if (!entry) throw new Error('Missing src/content/reflection.md');
+const { Content } = await render(entry);
+---
+
+<Layout title={wing.title} room={4}>
+  <header class="pt-36 pb-16 sm:pt-44">
+    <p class="label">( {wing.numeral} )</p>
+    <h1 class="mt-6 max-w-5xl font-display text-5xl leading-[0.95] sm:text-7xl lg:text-8xl">{wing.title}</h1>
+  </header>
+
+  {/* TODO (motion step): slow fade-in per paragraph. Optional: margin thumbnails of works mentioned. */}
+  <div class="reflection prose-body mx-auto max-w-[65ch] text-lg sm:text-xl">
+    <Content />
+  </div>
+
+  <footer class="mx-auto mt-32 max-w-[65ch] border-t border-ink pt-8">
+    <p class="font-display text-4xl">Thank you for visiting.</p>
+    <ul class="label mt-6 flex flex-wrap gap-6">
+      <li><a href="/appendices" class="underline underline-offset-4">Appendices →</a></li>
+      <li><a href="/" class="underline underline-offset-4">Back to the Entrance</a></li>
+    </ul>
+  </footer>
+</Layout>
+
+<style>
+  /* The pull line: write it as a > blockquote in reflection.md */
+  .reflection :global(blockquote) {
+    margin: 4rem 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    line-height: 1.05;
+  }
+</style>

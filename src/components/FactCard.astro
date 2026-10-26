@@ -1,0 +1,35 @@
+---
+// Part II fact card. Sticky on desktop while the gallery scrolls past.
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  work: CollectionEntry<'part2'>['data'];
+}
+
+const { work } = Astro.props;
+
+const rows = [
+  ['art form', work.type],
+  ['medium / materials', work.medium],
+  ['date made', work.date],
+  ['time spent', work.time_spent],
+  ['familiar or new', work.familiar ? 'Familiar practice' : 'New to me'],
+  ['why it connects', work.familiar ? work.familiar_reason : undefined],
+  ['made by', 'me (solo)'],
+].filter((row): row is [string, string] => Boolean(row[1]));
+---
+
+<aside class="border border-ink p-6 lg:sticky lg:top-24" aria-label="Fact card">
+  <p class="label">Fact card</p>
+  <dl class="mt-4 divide-y divide-ink/20">
+    {
+      rows.map(([key, value]) => (
+        <div class="py-2">
+          <dt class="label text-muted">{key}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+  {work.note && <p class="tag mt-4">Note: {work.note}</p>}
+</aside>

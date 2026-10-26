@@ -1,0 +1,84 @@
+---
+// Top nav. TODO (motion step): hide on scroll down, return on scroll up.
+import { site, wings } from '../data/site';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const links = wings.filter((w) => w.nav);
+const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+
+<header class="fixed inset-x-0 top-0 z-40 bg-wall/95">
+  <nav aria-label="Main" class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-8">
+    <a href="/" class="font-display text-xl leading-tight">{site.title}</a>
+
+    <ul class="label hidden items-center gap-6 md:flex">
+      {
+        links.map((w) => (
+          <li>
+            <a
+              href={w.href}
+              aria-current={isCurrent(w.href) ? 'page' : undefined}
+              class:list={[
+                'underline-offset-4 hover:underline',
+                isCurrent(w.href) && 'text-accent underline',
+              ]}
+            >
+              {w.nav}
+              {w.nav !== w.title && <span class="sr-only">: {w.title}</span>}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <button
+      type="button"
+      class="label md:hidden"
+      aria-expanded="false"
+      aria-controls="menu-panel"
+      data-menu-toggle
+    >
+      Menu
+    </button>
+  </nav>
+
+  <div id="menu-panel" hidden class="fixed inset-0 z-50 flex flex-col bg-wall px-4 py-4 md:hidden">
+    <div class="flex justify-end">
+      <button type="button" class="label" data-menu-toggle>Close</button>
+    </div>
+    <ul class="mt-12 space-y-6">
+      {
+        wings.map((w) => (
+          <li>
+            <a
+              href={w.href}
+              aria-current={isCurrent(w.href) && (w.href !== '/' || path === '/') ? 'page' : undefined}
+              class="block font-display text-4xl"
+            >
+              {w.numeral && <span class="label mr-3 align-middle">( {w.numeral} )</span>}
+              {w.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</header>
+
+<script>
+  const panel = document.getElementById('menu-panel')!;
+  const toggles = document.querySelectorAll<HTMLButtonElement>('[data-menu-toggle]');
+  const openButton = toggles[0];
+
+  const setOpen = (open: boolean) => {
+    panel.hidden = !open;
+    openButton.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    (open ? toggles[1] : openButton).focus();
+  };
+
+  toggles.forEach((t) => t.addEventListener('click', () => setOpen(panel.hidden)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !panel.hidden) setOpen(false);
+  });
+</script>

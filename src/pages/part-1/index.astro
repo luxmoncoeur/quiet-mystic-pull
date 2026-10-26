@@ -1,0 +1,66 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import SkipLink from '../../components/SkipLink.astro';
+import Marquee from '../../components/Marquee.astro';
+import MuseumLabel from '../../components/MuseumLabel.astro';
+import { part1Rooms, wings } from '../../data/site';
+import { getPart1, pad } from '../../lib/content';
+
+const works = await getPart1();
+const wing = wings[1];
+const activityTypes = [...new Set(works.map((w) => w.data.type).filter((t): t is string => Boolean(t)))];
+
+const rooms = part1Rooms
+  .map((room) => ({ ...room, works: works.filter((w) => w.data.room === room.id) }))
+  .filter((room) => room.works.length > 0);
+---
+
+<Layout title={`Part ${wing.numeral}: ${wing.title}`} room={2}>
+  <SectionHeader
+    numeral={wing.numeral}
+    title={wing.title}
+    line="All outputs from GEARTS, individual and group, in the order I've curated them."
+  >
+    <div class="mt-8"><SkipLink href="#rooms" label="Skip animation →" /></div>
+  </SectionHeader>
+
+  {activityTypes.length > 0 && <Marquee words={activityTypes} label="Activity types" />}
+
+  <div id="rooms" class="scroll-mt-24">
+    {
+      rooms.map((room, i) => (
+        <section class="pt-32" aria-labelledby={`${room.id}-heading`}>
+          <h2 id={`${room.id}-heading`} class="label">
+            ( Room {i + 1} · {room.name} )
+          </h2>
+          <p class="mt-4 max-w-2xl">{room.note}</p>
+
+          <ol class="mt-16 space-y-32">
+            {room.works.map((work) => {
+              const href = `/part-1/${work.id}`;
+              const [main] = work.data.media;
+              return (
+                <li class="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-end">
+                  <a href={href}>
+                    <img src={main.src} alt={main.alt} loading="lazy" decoding="async" class="w-full" />
+                  </a>
+                  <div>
+                    <p class="font-display text-7xl leading-none text-muted" aria-hidden="true">
+                      {pad(work.data.number)}
+                    </p>
+                    <MuseumLabel work={work.data} heading="h3" href={href} />
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+
+  <a href="/part-2" class="mt-40 block border-y border-ink py-12 text-center font-display text-4xl hover:text-accent sm:text-6xl">
+    Continue to Part II →
+  </a>
+</Layout>

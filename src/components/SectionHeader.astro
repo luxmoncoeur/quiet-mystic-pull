@@ -1,0 +1,17 @@
+---
+// ( I ) counter + huge title + one line. Used at the top of each wing.
+interface Props {
+  numeral: string;
+  title: string;
+  line?: string;
+}
+
+const { numeral, title, line } = Astro.props;
+---
+
+<header class="pt-36 pb-16 sm:pt-44">
+  <p class="label">( {numeral} )</p>
+  <h1 class="mt-6 font-display text-6xl leading-[0.95] sm:text-8xl lg:text-9xl">{title}</h1>
+  {line && <p class="mt-8 max-w-2xl">{line}</p>}
+  <slot />
+</header>

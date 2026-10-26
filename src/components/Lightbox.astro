@@ -1,0 +1,41 @@
+---
+// One shared lightbox for the whole site. Any link with `data-lightbox` that points
+// at an image opens it here, with its alt text as the caption. Without JS the
+// link simply opens the image file.
+---
+
+<dialog
+  id="lightbox"
+  aria-label="Enlarged image"
+  class="m-auto max-h-none max-w-none bg-transparent p-0 backdrop:bg-ink/90"
+>
+  <figure class="flex max-h-[100svh] w-screen flex-col items-center gap-3 p-4 sm:p-8">
+    <img alt="" class="max-h-[80svh] w-auto max-w-full object-contain" />
+    <figcaption class="max-w-2xl text-center text-wall"></figcaption>
+  </figure>
+  <form method="dialog" class="absolute top-4 right-4">
+    <button class="label bg-wall px-3 py-1">Close</button>
+  </form>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('lightbox') as HTMLDialogElement;
+  const img = dialog.querySelector('img')!;
+  const caption = dialog.querySelector('figcaption')!;
+
+  document.addEventListener('click', (e) => {
+    const link = (e.target as Element).closest<HTMLAnchorElement>('a[data-lightbox]');
+    if (!link) return;
+    e.preventDefault();
+    const alt = link.querySelector('img')?.alt ?? '';
+    img.src = link.href;
+    img.alt = alt;
+    caption.textContent = alt;
+    dialog.showModal();
+  });
+
+  // Click outside the image closes it.
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog || e.target === dialog.querySelector('figure')) dialog.close();
+  });
+</script>

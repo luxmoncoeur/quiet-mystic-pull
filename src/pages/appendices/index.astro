@@ -1,0 +1,39 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import { wings } from '../../data/site';
+import { getAppendices, pad } from '../../lib/content';
+
+const appendices = await getAppendices();
+const wing = wings[4];
+---
+
+<Layout title={wing.title} room={5}>
+  <SectionHeader numeral={wing.numeral} title={wing.title} line="Process evidence for each Part II work, in the same order." />
+
+  <ul class="grid grid-cols-2 gap-x-6 gap-y-16 sm:grid-cols-4">
+    {
+      appendices.map((a) => (
+        <li>
+          <a href={`/appendices/${a.data.number}`} class="group relative block">
+            <svg viewBox="0 0 120 96" class="w-full text-ink" aria-hidden="true">
+              <path
+                d="M4 14a6 6 0 0 1 6-6h32l10 10h58a6 6 0 0 1 6 6v62a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                class="group-hover:fill-ink/5"
+              />
+            </svg>
+            {a.data.sticker && (
+              <span class="tag absolute top-1/3 right-2 -rotate-6 bg-wall">{a.data.sticker}</span>
+            )}
+            <span class="label mt-3 block group-hover:underline">
+              appendix_{pad(a.data.number)}/ {a.data.folder}
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

@@ -1,0 +1,18 @@
+---
+// Row of repeated words. Static for now.
+// TODO (motion step): constant slow drift with GSAP, a little faster while scrolling.
+interface Props {
+  words: string[];
+  label?: string;
+}
+
+const { words, label = 'Art forms' } = Astro.props;
+const line = words.join(' · ');
+---
+
+<div class="overflow-hidden border-y border-ink py-4" data-marquee>
+  <p class="sr-only">{label}: {words.join(', ')}</p>
+  <div aria-hidden="true" class="flex w-max gap-8 font-display text-3xl whitespace-nowrap italic sm:text-4xl">
+    {[0, 1, 2].map(() => <span>{line} ·</span>)}
+  </div>
+</div>

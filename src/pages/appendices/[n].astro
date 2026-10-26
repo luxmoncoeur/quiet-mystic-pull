@@ -1,0 +1,107 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PrevNext from '../../components/PrevNext.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
+import { formatDate, getAppendices, getPart2, pad } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const appendices = await getAppendices();
+  const works = await getPart2();
+  return appendices.map((appendix, i) => ({
+    params: { n: String(appendix.data.number) },
+    props: {
+      appendix,
+      prev: appendices[i - 1],
+      next: appendices[i + 1],
+      work: works.find((w) => w.data.number === appendix.data.number),
+    },
+  }));
+}
+
+const { appendix, prev, next, work } = Astro.props;
+const { data } = appendix;
+const items = [...data.items].sort((a, b) => a.date.getTime() - b.date.getTime());
+const link = (a?: typeof appendix) =>
+  a && { href: `/appendices/${a.data.number}`, label: `appendix_${pad(a.data.number)}` };
+---
+
+<Layout title={`Appendix ${data.number}: ${data.title}`} room={5}>
+  <header class="pt-32 pb-12">
+    {work && <a href={`/part-2/${work.id}`} class="label underline-offset-4 hover:underline">← Back to the work</a>}
+    <h1 class="mt-8 inline-block border border-b-0 border-ink px-5 pt-3 pb-2 font-mono text-lg sm:text-2xl">
+      appendix_{pad(data.number)} <span class="text-muted">/</span> {data.title}
+    </h1>
+    <div class="border-t border-ink"></div>
+  </header>
+
+  <!-- TIMELINE OF EVIDENCE -->
+  <section aria-labelledby="timeline-heading">
+    <h2 id="timeline-heading" class="label">( Timeline of evidence )</h2>
+    <ol class="mt-8 space-y-16 border-l border-ink pl-6 sm:pl-10">
+      {
+        items.map((item) => (
+          <li class="grid gap-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
+            <time datetime={item.date.toISOString().slice(0, 10)} class="label">
+              {formatDate(item.date)}
+            </time>
+            <div class="space-y-3">
+              {item.image && (
+                <a href={item.image.src} data-lightbox class="block max-w-2xl">
+                  <img src={item.image.src} alt={item.image.alt} loading="lazy" class="w-full" />
+                </a>
+              )}
+              {item.video && <div class="max-w-2xl"><VideoEmbed {...item.video} /></div>}
+              <p>{item.description}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- FILES AND LINKS -->
+  <section aria-labelledby="links-heading" class="mt-24">
+    <h2 id="links-heading" class="label">( Files and links )</h2>
+    {
+      data.links.length > 0 ? (
+        <ul class="mt-6 divide-y divide-ink/20 border-y border-ink">
+          {data.links.map((l) => (
+            <li class="py-4">
+              <a href={l.url} target="_blank" rel="noopener noreferrer" class="font-display text-2xl underline underline-offset-4">
+                {l.label} ↗<span class="sr-only"> (opens in a new tab)</span>
+              </a>
+              <p class="mt-1">{l.proves}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="mt-6">(Links coming soon.)</p>
+      )
+    }
+  </section>
+
+  <!-- METADATA -->
+  {
+    data.metadata && (
+      <section aria-labelledby="meta-heading" class="mt-24">
+        <h2 id="meta-heading" class="label">( Metadata )</h2>
+        <div class="mt-6 overflow-x-auto" tabindex="0" role="region" aria-labelledby="meta-heading">
+          <table class="w-full text-left">
+            <thead class="label border-b border-ink">
+              <tr>{data.metadata.columns.map((c) => <th scope="col" class="py-2 pr-6 font-normal">{c}</th>)}</tr>
+            </thead>
+            <tbody class="divide-y divide-ink/20">
+              {data.metadata.rows.map((row) => (
+                <tr>{row.map((cell) => <td class="py-2 pr-6">{cell}</td>)}</tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )
+  }
+
+  <p class="mt-24 border-t border-ink pt-6">All works in Part II were made by me without AI tools.</p>
+
+  <PrevNext prev={link(prev)} next={link(next)} back={{ href: '/appendices', label: '↑ All appendices' }} />
+</Layout>

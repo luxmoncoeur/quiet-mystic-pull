@@ -1,0 +1,50 @@
+---
+// The Part I label card. Fields always appear in this order.
+import type { CollectionEntry } from 'astro:content';
+import { pad } from '../lib/content';
+
+interface Props {
+  work: CollectionEntry<'part1'>['data'];
+  heading?: 'h1' | 'h2' | 'h3';
+  href?: string; // link the title, e.g. to the work page
+}
+
+const { work, heading: Heading = 'h3', href } = Astro.props;
+
+const rows = [
+  ['type', work.type],
+  ['medium', work.medium],
+  ['date', work.date],
+  ['authorship', work.authorship],
+  ['group', work.authorship === 'Group' ? `${work.group} — my role: ${work.role}` : undefined],
+].filter((row): row is [string, string] => Boolean(row[1]));
+---
+
+<div class="border-t border-ink pt-4">
+  <p class="label">( {pad(work.number)} )</p>
+  <Heading class="mt-2 font-display text-3xl leading-tight sm:text-4xl">
+    {href ? <a href={href} class="underline-offset-4 hover:underline">{work.title}</a> : work.title}
+  </Heading>
+
+  <dl class="mt-4 space-y-1">
+    {
+      rows.map(([key, value]) => (
+        <div class="flex flex-wrap gap-x-2">
+          <dt class="label pt-0.5 text-muted">{key} /</dt>
+          <dd>{value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+
+  {
+    (work.ai_disclosure || work.note) && (
+      <ul class="mt-4 flex flex-col items-start gap-2">
+        {work.ai_disclosure && (
+          <li class="tag">AI-assisted, as allowed in this activity: {work.ai_disclosure}</li>
+        )}
+        {work.note && <li class="tag">Note: {work.note}</li>}
+      </ul>
+    )
+  }
+</div>

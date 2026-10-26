@@ -1,0 +1,36 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import PageCounter from '../components/PageCounter.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string; // page title; the site title is added after it
+  description?: string;
+  room: number; // which of the five rooms, for the page counter
+}
+
+const { title, description = site.description, room } = Astro.props;
+const fullTitle = title ? `${title} · ${site.title}` : site.title;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="description" content={description} />
+    <title>{fullTitle}</title>
+  </head>
+  <body class="overflow-x-hidden">
+    <Nav />
+    <main id="main" class="mx-auto max-w-7xl px-4 pb-32 sm:px-8">
+      <slot />
+    </main>
+    <slot name="after" />
+    <PageCounter room={room} />
+    <Lightbox />
+  </body>
+</html>

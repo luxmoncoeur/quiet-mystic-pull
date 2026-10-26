@@ -1,0 +1,61 @@
+---
+// Lazy YouTube or TikTok embed with a visible direct link.
+// Shows a "Video coming soon" box when neither is set.
+interface Props {
+  title: string;
+  youtube?: string; // video ID
+  tiktok?: string; // full video URL
+}
+
+const { title, youtube, tiktok } = Astro.props;
+
+const tiktokId = tiktok?.match(/\/video\/(\d+)/)?.[1];
+
+const embed = youtube
+  ? {
+      src: `https://www.youtube-nocookie.com/embed/${youtube}`,
+      href: `https://www.youtube.com/watch?v=${youtube}`,
+      site: 'YouTube',
+      aspect: 'aspect-video',
+    }
+  : tiktok
+    ? {
+        src: tiktokId ? `https://www.tiktok.com/embed/v2/${tiktokId}` : undefined,
+        href: tiktok,
+        site: 'TikTok',
+        aspect: 'aspect-[9/16] max-w-sm',
+      }
+    : undefined;
+---
+
+<figure>
+  {
+    embed ? (
+      <>
+        {embed.src && (
+          <iframe
+            src={embed.src}
+            title={title}
+            loading="lazy"
+            allow="encrypted-media; picture-in-picture; fullscreen"
+            allowfullscreen
+            class:list={['w-full border-0 bg-placeholder', embed.aspect]}
+          />
+        )}
+        <figcaption class="mt-2 flex flex-wrap justify-between gap-2">
+          <span>{title}</span>
+          <a href={embed.href} target="_blank" rel="noopener noreferrer" class="label underline underline-offset-4">
+            Watch on {embed.site} ↗<span class="sr-only"> (opens in a new tab)</span>
+          </a>
+        </figcaption>
+      </>
+    ) : (
+      <>
+        <div class="flex aspect-video w-full items-center justify-center border border-dashed border-muted bg-placeholder">
+          <p class="label">Video coming soon</p>
+        </div>
+        <figcaption class="mt-2">{title}</figcaption>
+      </>
+    )
+  }
+</figure>
