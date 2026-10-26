@@ -4,6 +4,7 @@ import Nav from '../components/Nav.astro';
 import PageCounter from '../components/PageCounter.astro';
 import Lightbox from '../components/Lightbox.astro';
 import { site } from '../data/site';
+import { plain } from '../lib/content';
 
 interface Props {
   title?: string; // page title; the site title is added after it
@@ -12,7 +13,7 @@ interface Props {
 }
 
 const { title, description = site.description, room } = Astro.props;
-const fullTitle = title ? `${title} · ${site.title}` : site.title;
+const fullTitle = plain(title ? `${title} · ${site.title}` : site.title);
 ---
 
 <!doctype html>
@@ -22,6 +23,7 @@ const fullTitle = title ? `${title} · ${site.title}` : site.title;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
     <title>{fullTitle}</title>
     <script is:inline>
       // `js` = scripts run; `motion` = animate (not with reduced motion).
@@ -29,6 +31,12 @@ const fullTitle = title ? `${title} · ${site.title}` : site.title;
       (function () {
         var html = document.documentElement;
         html.classList.add('js');
+        // Theme before first paint: a saved choice wins, otherwise the system setting.
+        try {
+          var saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') html.dataset.theme = saved;
+        } catch (e) {}
+        html.dataset.mode = html.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         if (!matchMedia('(prefers-reduced-motion: reduce)').matches) html.classList.add('motion');
         setTimeout(function () {
           if (!window.__motionReady) html.classList.remove('motion');

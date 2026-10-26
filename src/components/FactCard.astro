@@ -19,9 +19,9 @@ const rows = [
 ].filter((row): row is [string, string] => Boolean(row[1]));
 ---
 
-<aside class="border border-ink p-6 lg:sticky lg:top-24" aria-label="Fact card">
+<aside class="border border-border bg-surface p-6 lg:sticky lg:top-24" aria-label="Fact card">
   <p class="label">Fact card</p>
-  <dl class="mt-4 divide-y divide-ink/20">
+  <dl class="mt-4 divide-y divide-border">
     {
       rows.map(([key, value]) => (
         <div class="py-2">

@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import FactCard from '../../components/FactCard.astro';
 import PrevNext from '../../components/PrevNext.astro';
 import VideoEmbed from '../../components/VideoEmbed.astro';
+import AccentTitle from '../../components/AccentTitle.astro';
 import { getAppendices, getPart2, pad } from '../../lib/content';
 
 export async function getStaticPaths() {
@@ -40,10 +41,10 @@ const galleryClass = {
     <!-- HERO -->
     <header class="pt-32">
       <p class="label" data-reveal="fade">{pad(work.data.number)} / {pad(total)}</p>
-      <h1 data-split class="mt-6 font-display text-6xl leading-[0.95] sm:text-8xl lg:text-9xl">{work.data.title}</h1>
+      <h1 data-split class="mt-6 font-display text-6xl leading-[0.95] sm:text-8xl lg:text-9xl"><AccentTitle text={work.data.title} /></h1>
       {work.data.type && <p class="label mt-6" data-reveal="fade">{work.data.type}</p>}
       <a href={hero.src} data-lightbox data-reveal class="mt-12 block overflow-hidden">
-        <img src={hero.src} alt={hero.alt} data-zoom class="max-h-[90svh] w-full object-contain" />
+        <img src={hero.src} alt={hero.alt} data-zoom class="max-h-[90svh] w-full bg-transparent object-contain" />
       </a>
     </header>
 
@@ -116,7 +117,7 @@ const galleryClass = {
             <a
               href={`/appendices/${appendix.data.number}`}
               data-reveal
-              class="block border border-ink p-8 font-display text-3xl transition-colors duration-500 hover:bg-ink hover:text-wall sm:text-5xl"
+              class="block border border-ink p-8 font-display text-3xl transition-colors duration-500 hover:border-accent hover:bg-accent hover:text-bg sm:text-5xl"
             >
               See the process evidence → Appendix {appendix.data.number}
             </a>

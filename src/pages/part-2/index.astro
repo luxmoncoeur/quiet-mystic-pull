@@ -4,6 +4,7 @@ import SectionHeader from '../../components/SectionHeader.astro';
 import SkipLink from '../../components/SkipLink.astro';
 import { wings } from '../../data/site';
 import { getPart2, pad } from '../../lib/content';
+import AccentTitle from '../../components/AccentTitle.astro';
 
 const works = await getPart2();
 const wing = wings[2];
@@ -28,16 +29,16 @@ const total = pad(works.length);
           <li data-stack-card class="motion-safe:sticky motion-safe:top-0 motion-safe:h-svh py-4 sm:py-6">
             <a
               href={`/part-2/${work.id}`}
-              class="group flex h-full origin-top flex-col gap-5 border border-ink bg-wall p-5 shadow-[0_-18px_40px_-20px_rgb(22_22_22/0.25)] sm:p-8"
+              class="group flex h-full origin-top flex-col gap-5 border border-border bg-surface p-5 shadow-[0_-18px_40px_-20px_var(--shadow)] sm:p-8"
             >
               <div class="flex flex-wrap items-start justify-between gap-4">
                 <p class="font-display text-6xl leading-none sm:text-8xl">
-                  {pad(work.data.number)} <span class="text-muted">/ {total}</span>
+                  <span class="text-accent">{pad(work.data.number)}</span> <span class="text-muted">/ {total}</span>
                 </p>
                 <span class="tag">{work.data.familiar ? 'Familiar practice' : 'New to me'}</span>
               </div>
               <div>
-                <h2 class="font-display text-4xl leading-tight group-hover:underline sm:text-6xl">{work.data.title}</h2>
+                <h2 class="font-display text-4xl leading-tight transition-colors group-hover:text-accent sm:text-6xl"><AccentTitle text={work.data.title} /></h2>
                 {work.data.type && <p class="label mt-2">{work.data.type}</p>}
               </div>
               <div class="min-h-[40svh] flex-1 overflow-hidden">
@@ -49,7 +50,7 @@ const total = pad(works.length);
                   class="h-full w-full object-cover transition-transform duration-1000 ease-out motion-safe:group-hover:scale-[1.03]"
                 />
               </div>
-              <p class="label">Open the feature →</p>
+              <p class="label transition-colors group-hover:text-accent">Open the feature →</p>
             </a>
           </li>
         );
@@ -57,7 +58,7 @@ const total = pad(works.length);
     }
   </ol>
 
-  <a href="/reflection" data-reveal class="mt-32 block border-y border-ink py-12 text-center font-display text-4xl transition-colors duration-500 hover:bg-ink hover:text-wall sm:text-6xl">
+  <a href="/reflection" data-reveal class="mt-32 block border-y border-ink py-12 text-center font-display text-4xl transition-colors duration-500 hover:border-accent hover:bg-accent hover:text-bg sm:text-6xl">
     Continue to the Reflection →
   </a>
 </Layout>

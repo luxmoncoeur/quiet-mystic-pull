@@ -5,7 +5,8 @@ import Hallway3D from '../components/Hallway3D.astro';
 import SkipLink from '../components/SkipLink.astro';
 import Marquee from '../components/Marquee.astro';
 import { site, wings } from '../data/site';
-import { getAppendices, getPart1, getPart2, pad } from '../lib/content';
+import { getAppendices, getPart1, getPart2, pad, plain } from '../lib/content';
+import AccentTitle from '../components/AccentTitle.astro';
 import type { Frame } from '../scripts/hallway';
 
 const part1 = await getPart1();
@@ -53,14 +54,14 @@ const artForms = part2.map((w) => w.data.type ?? w.data.title);
     <div data-hero class="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--color-wall)_0%,color-mix(in_srgb,var(--color-wall)_70%,transparent)_45%,transparent_75%)]"
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--color-bg)_0%,color-mix(in_srgb,var(--color-bg)_70%,transparent)_45%,transparent_75%)]"
       >
       </div>
       <div class="absolute top-24 left-4 sm:left-8">
         <SkipLink href="#exhibition-note" data-skip-walkthrough />
       </div>
       <h1 id="site-title" data-split class="relative max-w-6xl font-display text-6xl leading-[0.92] sm:text-8xl lg:text-[9rem]">
-        {site.title}
+        <AccentTitle text={site.title} />
       </h1>
       <p class="relative mt-6 font-display text-xl italic sm:text-2xl" data-reveal="fade">{site.subtitle}</p>
       <p class="label relative mt-6" data-reveal="fade">{site.tagline}</p>
@@ -82,7 +83,7 @@ const artForms = part2.map((w) => w.data.type ?? w.data.title);
               <p class="label mt-3">
                 ( {f.number} ) · {f.part}
               </p>
-              <p class="font-display text-2xl leading-tight group-hover:underline">{f.title}</p>
+              <p class="font-display text-2xl leading-tight transition-colors group-hover:text-accent"><AccentTitle text={f.title} /></p>
               <p class="label text-muted">{[f.date, f.medium].filter(Boolean).join(' / ')}</p>
             </a>
           </li>
@@ -107,10 +108,10 @@ const artForms = part2.map((w) => w.data.type ?? w.data.title);
       {
         directory.map((w) => (
           <li class="border-t border-ink" data-reveal>
-            <a href={w.href} class="dir-row relative block py-6 sm:py-8">
+            <a href={w.href} class="dir-row relative block py-6 transition-colors duration-500 hover:text-accent sm:py-8">
               <span class="dir-inner flex flex-wrap items-baseline gap-x-6 gap-y-2">
                 <span class="label w-16 shrink-0">( {w.numeral} )</span>
-                <span class="flex-1 font-display text-3xl leading-tight sm:text-5xl lg:text-6xl">{w.title}</span>
+                <span class="flex-1 font-display text-3xl leading-tight sm:text-5xl lg:text-6xl">{plain(w.title)}</span>
                 {w.count && <span class="label">{w.count}</span>}
               </span>
               {w.thumb && (
@@ -139,7 +140,7 @@ const artForms = part2.map((w) => w.data.type ?? w.data.title);
         <p class="label mt-2">{site.footer.course} · {site.footer.section} · {site.footer.year}</p>
         <p class="mt-4 max-w-xl text-muted">{site.footer.credits}</p>
       </div>
-      <a href="#site-title" class="label self-start underline-offset-4 hover:underline">Back to top ↑</a>
+      <a href="#site-title" class="label self-start underline-offset-4 transition-colors hover:text-accent hover:underline">Back to top ↑</a>
     </div>
   </footer>
 </Layout>

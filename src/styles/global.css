@@ -5,14 +5,86 @@
 @import "@fontsource/ibm-plex-mono/400.css";
 @import "@fontsource/ibm-plex-mono/500.css";
 
-/* Tailwind v4 keeps its config here: Palette A (Gallery wall) and the three fonts. */
-@theme {
-  --color-wall: #f3f0ea;
-  --color-ink: #161616;
-  --color-muted: #6b675f;
-  --color-accent: #b5432f;
-  --color-placeholder: #d6d2ca;
+/* ------------------------------------------------------------------
+   "Buzz" palette. The raw values live in CSS variables so the theme can
+   switch at runtime; Tailwind's color names point at them.
+   Light ("street mist") is the default; dark ("night street") follows the
+   system setting unless the nav toggle has set data-theme on <html>.
+   ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  --bg: #e9ecee;
+  --surface: #f6f7f8;
+  --border: #ccd3da;
+  --muted: #815b58;
+  --ink: #1c171a;
+  --accent: #823735;
+  --accent-soft: #ebd3d0;
+  --accent-soft-text: #672925;
+  --secondary: #8da8c1;
+  --secondary-soft: #d4dfe9;
+  --secondary-soft-text: #1a2e49;
+  /* derived, not part of the palette itself */
+  --scrim: color-mix(in srgb, var(--ink) 92%, transparent);
+  --on-scrim: var(--bg);
+  --shadow: color-mix(in srgb, var(--ink) 22%, transparent);
+}
 
+/* Dark, from the system setting (unless the toggle chose light) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #161214;
+    --surface: #211b1d;
+    --border: #3a3033;
+    --muted: #a8908c;
+    --ink: #e9ecee;
+    --accent: #d4776f;
+    --accent-soft: #43211f;
+    --accent-soft-text: #ebd3d0;
+    --secondary: #8da8c1;
+    --secondary-soft: #1f2c3b;
+    --secondary-soft-text: #b9ccdd;
+    --scrim: color-mix(in srgb, #000 88%, transparent);
+    --on-scrim: var(--ink);
+    --shadow: color-mix(in srgb, #000 55%, transparent);
+  }
+}
+
+/* Dark, chosen with the toggle */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #161214;
+  --surface: #211b1d;
+  --border: #3a3033;
+  --muted: #a8908c;
+  --ink: #e9ecee;
+  --accent: #d4776f;
+  --accent-soft: #43211f;
+  --accent-soft-text: #ebd3d0;
+  --secondary: #8da8c1;
+  --secondary-soft: #1f2c3b;
+  --secondary-soft-text: #b9ccdd;
+  --scrim: color-mix(in srgb, #000 88%, transparent);
+  --on-scrim: var(--ink);
+  --shadow: color-mix(in srgb, #000 55%, transparent);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-ink: var(--ink);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-text: var(--accent-soft-text);
+  --color-secondary: var(--secondary);
+  --color-secondary-soft: var(--secondary-soft);
+  --color-secondary-soft-text: var(--secondary-soft-text);
+}
+
+@theme {
   --font-display: "Instrument Serif", ui-serif, Georgia, serif;
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -20,7 +92,7 @@
 
 @layer base {
   html {
-    background-color: var(--color-wall);
+    background-color: var(--color-bg);
     color: var(--color-ink);
     font-family: var(--font-sans);
     /* Body text is 18px, above the 17px minimum. */
@@ -31,7 +103,7 @@
 
   body {
     min-height: 100svh;
-    background-color: var(--color-wall);
+    background-color: var(--color-bg);
   }
 
   :focus-visible {
@@ -40,7 +112,12 @@
   }
 
   img {
-    background-color: var(--color-placeholder);
+    background-color: var(--color-border);
+  }
+
+  ::selection {
+    background-color: var(--color-secondary-soft);
+    color: var(--color-secondary-soft-text);
   }
 }
 
@@ -55,8 +132,19 @@
   /* Visible tag for AI disclosure, missing files, Familiar / New to me */
   .tag {
     display: inline-block;
-    border: 1px solid var(--color-accent);
-    color: var(--color-accent);
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent-soft-text);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    padding: 0.2rem 0.55rem;
+  }
+
+  /* Folder stickers in the appendices: the secondary blue, as a small touch */
+  .sticker {
+    display: inline-block;
+    background-color: var(--color-secondary-soft);
+    color: var(--color-secondary-soft-text);
     font-family: var(--font-mono);
     font-size: 0.8rem;
     line-height: 1.4;
@@ -70,6 +158,10 @@
   .prose-body a {
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  .prose-body a:hover {
+    color: var(--color-accent);
   }
 }
 
@@ -121,6 +213,28 @@ body::after {
   opacity: 0.07;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Nav toggle: the word for the current theme is ink and underlined */
+:root[data-mode="light"] [data-theme-word="light"],
+:root[data-mode="dark"] [data-theme-word="dark"] {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* On dark backgrounds the grain lightens instead */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body::after {
+    filter: invert(1);
+    mix-blend-mode: screen;
+    opacity: 0.05;
+  }
+}
+:root[data-theme="dark"] body::after {
+  filter: invert(1);
+  mix-blend-mode: screen;
+  opacity: 0.05;
 }
 
 /* Floor directory: the row slides right and a thumbnail appears */

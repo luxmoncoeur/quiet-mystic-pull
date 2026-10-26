@@ -39,7 +39,7 @@ const embed = youtube
             loading="lazy"
             allow="encrypted-media; picture-in-picture; fullscreen"
             allowfullscreen
-            class:list={['w-full border-0 bg-placeholder', embed.aspect]}
+            class:list={['w-full border-0 bg-surface', embed.aspect]}
           />
         )}
         <figcaption class="mt-2 flex flex-wrap justify-between gap-2">
@@ -51,7 +51,7 @@ const embed = youtube
       </>
     ) : (
       <>
-        <div class="flex aspect-video w-full items-center justify-center border border-dashed border-muted bg-placeholder">
+        <div class="flex aspect-video w-full items-center justify-center border border-dashed border-muted bg-surface">
           <p class="label">Video coming soon</p>
         </div>
         <figcaption class="mt-2">{title}</figcaption>

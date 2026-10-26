@@ -22,13 +22,13 @@ const wing = wings[4];
                 fill="none"
                 stroke="currentColor"
                 stroke-width="2"
-                class="group-hover:fill-ink/5"
+                class="group-hover:fill-surface"
               />
             </svg>
             {a.data.sticker && (
-              <span class="tag absolute top-1/3 right-2 -rotate-6 bg-wall">{a.data.sticker}</span>
+              <span class="sticker absolute top-1/3 right-2 -rotate-6">{a.data.sticker}</span>
             )}
-            <span class="label mt-3 block group-hover:underline">
+            <span class="label mt-3 block transition-colors group-hover:text-accent">
               appendix_{pad(a.data.number)}/ {a.data.folder}
             </span>
           </a>

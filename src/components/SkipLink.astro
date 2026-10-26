@@ -10,4 +10,4 @@ interface Props extends HTMLAttributes<'a'> {
 const { href, label = 'Skip the walkthrough →', ...rest } = Astro.props;
 ---
 
-<a href={href} class="label inline-block underline-offset-4 hover:underline" {...rest}>{label}</a>
+<a href={href} class="label inline-block underline-offset-4 transition-colors hover:text-accent hover:underline" {...rest}>{label}</a>

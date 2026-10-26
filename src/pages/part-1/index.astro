@@ -46,7 +46,7 @@ const rooms = part1Rooms
                     <img src={main.src} alt={main.alt} loading="lazy" decoding="async" class="w-full transition-transform duration-1000 ease-out motion-safe:hover:scale-[1.02]" />
                   </a>
                   <div data-reveal>
-                    <p class="font-display text-7xl leading-none text-muted" aria-hidden="true">
+                    <p class="font-display text-7xl leading-none text-accent" aria-hidden="true">
                       {pad(work.data.number)}
                     </p>
                     <MuseumLabel work={work.data} heading="h3" href={href} showNumber={false} />
@@ -60,7 +60,7 @@ const rooms = part1Rooms
     }
   </div>
 
-  <a href="/part-2" data-reveal class="mt-40 block border-y border-ink py-12 text-center font-display text-4xl transition-colors duration-500 hover:bg-ink hover:text-wall sm:text-6xl">
+  <a href="/part-2" data-reveal class="mt-40 block border-y border-ink py-12 text-center font-display text-4xl transition-colors duration-500 hover:border-accent hover:bg-accent hover:text-bg sm:text-6xl">
     Continue to Part II →
   </a>
 </Layout>

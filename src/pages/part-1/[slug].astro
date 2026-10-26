@@ -23,7 +23,7 @@ const link = (w?: typeof work) => w && { href: `/part-1/${w.id}`, label: w.data.
 <Layout title={work.data.title} room={2}>
   <article class="pt-32">
     <a href={main.src} data-lightbox data-reveal class="block">
-      <img src={main.src} alt={main.alt} class="mx-auto max-h-[85svh] w-auto" />
+      <img src={main.src} alt={main.alt} class="mx-auto max-h-[85svh] w-auto bg-transparent" />
     </a>
 
     {

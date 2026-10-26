@@ -5,6 +5,7 @@
 // flat swipe row below takes over (see scripts/entrance.ts).
 import type { Frame } from '../scripts/hallway';
 import { site } from '../data/site';
+import { plain } from '../lib/content';
 
 interface Props {
   frames: Frame[];
@@ -30,12 +31,12 @@ const json = JSON.stringify({
       frames.map((f) => (
         <div
           data-hallway-label
-          class="absolute top-0 left-0 w-60 border-t border-ink bg-wall/85 px-3 pt-2 pb-3 opacity-0 backdrop-blur-sm will-change-transform"
+          class="absolute top-0 left-0 w-60 border-t border-ink bg-surface/85 px-3 pt-2 pb-3 opacity-0 backdrop-blur-sm will-change-transform"
         >
           <p class="label">
             ( {f.number} ) · {f.part}
           </p>
-          <p class="mt-1 font-display text-2xl leading-tight">{f.title}</p>
+          <p class="mt-1 font-display text-2xl leading-tight">{plain(f.title)}</p>
           <p class="label mt-1 text-muted">{[f.date, f.medium].filter(Boolean).join(' / ')}</p>
         </div>
       ))
@@ -44,7 +45,7 @@ const json = JSON.stringify({
 
   <slot />
 
-  <div data-hallway-wash aria-hidden="true" class="pointer-events-none absolute inset-0 bg-wall opacity-0"></div>
+  <div data-hallway-wash aria-hidden="true" class="pointer-events-none absolute inset-0 bg-bg opacity-0"></div>
 
   <script type="application/json" data-hallway-data set:html={json} />
 </section>

@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { splitAccent } from '../lib/accent';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -40,12 +41,23 @@ const B_NEAR = -28; // near wall of corridor B (z)
 const B_END = 16; // end wall (x)
 const B_MID = (A_END + B_NEAR) / 2;
 
-const COLOR = {
-  wall: 0xf3f0ea,
-  floor: 0xe6e1d8,
-  ceiling: 0xf7f5f1,
-  ink: 0x161616,
-};
+// Colors come from the site palette (CSS variables), so the hallway follows
+// the light / dark theme: walls and ceiling are `surface`, the floor is
+// `border`, the fog fades into `bg`, and frames are `ink`.
+type Palette = Record<'bg' | 'surface' | 'border' | 'ink' | 'muted' | 'accent', string>;
+
+function readPalette(): Palette {
+  const css = getComputedStyle(document.documentElement);
+  const get = (name: string) => css.getPropertyValue(`--${name}`).trim();
+  return {
+    bg: get('bg'),
+    surface: get('surface'),
+    border: get('border'),
+    ink: get('ink'),
+    muted: get('muted'),
+    accent: get('accent'),
+  };
+}
 
 type Side = 'left' | 'right' | 'back';
 
@@ -77,7 +89,7 @@ function plane(w: number, h: number, material: THREE.Material) {
   return new THREE.Mesh(new THREE.PlaneGeometry(w, h), material);
 }
 
-async function titleCardTexture(title: string, subtitle: string, tagline: string) {
+async function titleCardTexture(title: string, subtitle: string, tagline: string, color: Palette) {
   await Promise.all([
     document.fonts.load('400 160px "Instrument Serif"'),
     document.fonts.load('italic 400 64px "Instrument Serif"'),
@@ -87,29 +99,56 @@ async function titleCardTexture(title: string, subtitle: string, tagline: string
   canvas.width = 2048;
   canvas.height = 1536;
   const ctx = canvas.getContext('2d')!;
-  ctx.fillStyle = '#f3f0ea';
+  ctx.fillStyle = color.surface;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  // Wrap the title onto as many lines as it needs.
+  // Wrap the title onto as many lines as it needs; the *marked* word is drawn
+  // in the accent color, like on the page.
   ctx.font = '400 168px "Instrument Serif"';
-  const lines: string[] = [];
-  for (const word of title.split(' ')) {
+  type Word = { text: string; accent: boolean; attached?: boolean };
+  const toWords = (text: string): Word[] => text.split(' ').filter(Boolean).map((t) => ({ text: t, accent: false }));
+  const { before, accent, after } = splitAccent(title);
+  // Punctuation right after the marked word ("Becoming?") stays attached to it.
+  const tail = after.match(/^\S+/)?.[0] ?? '';
+  const words: Word[] = [
+    ...toWords(before),
+    ...(accent ? [{ text: accent, accent: true }] : []),
+    ...(tail ? [{ text: tail, accent: false, attached: true }] : []),
+    ...toWords(after.slice(tail.length)),
+  ];
+
+  const space = ctx.measureText(' ').width;
+  const widthOf = (line: Word[]) =>
+    line.reduce((sum, w, i) => sum + ctx.measureText(w.text).width + (i && !w.attached ? space : 0), 0);
+  const lines: Word[][] = [];
+  for (const word of words) {
     const last = lines[lines.length - 1];
-    if (last && ctx.measureText(`${last} ${word}`).width < 1700) lines[lines.length - 1] = `${last} ${word}`;
-    else lines.push(word);
+    if (last && (word.attached || widthOf([...last, word]) < 1700)) last.push(word);
+    else lines.push([word]);
   }
+
   const lineHeight = 160;
   const top = canvas.height / 2 - ((lines.length - 1) * lineHeight) / 2 - 90;
-  ctx.fillStyle = '#161616';
-  lines.forEach((line, i) => ctx.fillText(line, canvas.width / 2, top + i * lineHeight));
+  ctx.textAlign = 'left';
+  lines.forEach((line, i) => {
+    let x = (canvas.width - widthOf(line)) / 2;
+    line.forEach((w, j) => {
+      if (j && !w.attached) x += space;
+      ctx.fillStyle = w.accent ? color.accent : color.ink;
+      ctx.fillText(w.text, x, top + i * lineHeight);
+      x += ctx.measureText(w.text).width;
+    });
+  });
+  ctx.textAlign = 'center';
+  ctx.fillStyle = color.ink;
 
   const below = top + (lines.length - 1) * lineHeight;
   ctx.font = 'italic 400 64px "Instrument Serif"';
   ctx.fillText(subtitle, canvas.width / 2, below + 150);
   ctx.font = '400 30px "IBM Plex Mono"';
-  ctx.fillStyle = '#6b675f';
+  ctx.fillStyle = color.muted;
   ctx.fillText(tagline, canvas.width / 2, below + 250);
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -124,13 +163,16 @@ export async function createHallway(opts: Options) {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(COLOR.wall);
-  scene.fog = new THREE.Fog(COLOR.wall, 10, 36);
+  const background = new THREE.Color();
+  const fog = new THREE.Fog(0, 10, 36);
+  scene.background = background;
+  scene.fog = fog;
 
   const camera = new THREE.PerspectiveCamera(55, 1, 0.05, 80);
 
   // --- Lights: soft overall fill plus pools of light along the ceiling ---
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xf1ece4, 3.1));
+  const ambient = new THREE.HemisphereLight(0xffffff, 0xffffff, 3.1);
+  scene.add(ambient);
   for (const [x, z] of [
     [0, -3],
     [0, -11],
@@ -145,9 +187,9 @@ export async function createHallway(opts: Options) {
   }
 
   // --- The corridor ---
-  const wallMat = new THREE.MeshStandardMaterial({ color: COLOR.wall, roughness: 1 });
-  const floorMat = new THREE.MeshStandardMaterial({ color: COLOR.floor, roughness: 0.85 });
-  const ceilingMat = new THREE.MeshStandardMaterial({ color: COLOR.ceiling, roughness: 1 });
+  const wallMat = new THREE.MeshStandardMaterial({ roughness: 1 });
+  const floorMat = new THREE.MeshStandardMaterial({ roughness: 0.85 });
+  const ceilingMat = new THREE.MeshStandardMaterial({ roughness: 1 });
   const lampMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
   const aLength = A_START - A_END;
@@ -193,10 +235,11 @@ export async function createHallway(opts: Options) {
           .finally(tick),
       ),
     ),
-    titleCardTexture(opts.title, opts.subtitle, opts.tagline).finally(tick),
+    titleCardTexture(opts.title, opts.subtitle, opts.tagline, readPalette()).finally(tick),
   ]);
 
-  const frameMat = new THREE.MeshStandardMaterial({ color: COLOR.ink, roughness: 0.6 });
+  const frameMat = new THREE.MeshStandardMaterial({ roughness: 0.6 });
+  const emptyMat = new THREE.MeshBasicMaterial();
   const anisotropy = renderer.capabilities.getMaxAnisotropy();
 
   // --- Hang the frames ---
@@ -220,7 +263,7 @@ export async function createHallway(opts: Options) {
       texture.anisotropy = anisotropy;
       picture = plane(w, h, new THREE.MeshBasicMaterial({ map: texture }));
     } else {
-      picture = plane(w, h, new THREE.MeshBasicMaterial({ color: 0xd6d2ca }));
+      picture = plane(w, h, emptyMat);
     }
     picture.position.z = 0.03;
     group.add(picture);
@@ -247,7 +290,8 @@ export async function createHallway(opts: Options) {
   const cardH = 2.7;
   const card = new THREE.Group();
   card.add(new THREE.Mesh(new THREE.BoxGeometry(cardW + 0.12, cardH + 0.12, 0.05), frameMat));
-  const cardFace = plane(cardW, cardH, new THREE.MeshBasicMaterial({ map: cardTexture }));
+  const cardMat = new THREE.MeshBasicMaterial({ map: cardTexture });
+  const cardFace = plane(cardW, cardH, cardMat);
   cardFace.position.z = 0.03;
   card.add(cardFace);
   card.position.set(B_END - 0.03, EYE, B_MID);
@@ -331,6 +375,32 @@ export async function createHallway(opts: Options) {
     .to(state, { t: 1, duration: 1, ease: 'none', onUpdate: () => render(state.t) }, 0)
     .to(hero, { autoAlpha: 0, y: -40, duration: 0.06, ease: 'power1.in' }, 0)
     .to(wash, { opacity: 1, duration: 0.05, ease: 'none' }, 0.95);
+
+  // Repaint in the current theme; runs now and whenever the nav toggle or the
+  // system setting switches light / dark.
+  let themeVersion = 0;
+  async function applyTheme(redrawCard: boolean) {
+    const version = ++themeVersion;
+    const color = readPalette();
+    background.set(color.bg);
+    fog.color.set(color.bg);
+    ambient.groundColor.set(color.surface);
+    wallMat.color.set(color.surface);
+    ceilingMat.color.set(color.surface);
+    floorMat.color.set(color.border);
+    frameMat.color.set(color.ink);
+    emptyMat.color.set(color.border);
+    if (redrawCard) {
+      const texture = await titleCardTexture(opts.title, opts.subtitle, opts.tagline, color);
+      if (version !== themeVersion) return texture.dispose(); // a newer switch won
+      cardMat.map?.dispose();
+      cardMat.map = texture;
+      cardMat.needsUpdate = true;
+    }
+    render(state.t);
+  }
+  applyTheme(false);
+  window.addEventListener('themechange', () => applyTheme(true));
 
   return { render: () => render(state.t) };
 }

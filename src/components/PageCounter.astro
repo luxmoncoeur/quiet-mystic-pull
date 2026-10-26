@@ -1,7 +1,7 @@
 ---
 // Small ( 02 / 05 ) in the corner showing which room of the museum you're in.
 import { wings } from '../data/site';
-import { pad } from '../lib/content';
+import { pad, plain } from '../lib/content';
 
 interface Props {
   room: number; // 1-based position in `wings`
@@ -10,8 +10,8 @@ interface Props {
 const { room } = Astro.props;
 ---
 
-<p class="label pointer-events-none fixed right-4 bottom-4 z-30 sm:right-8 sm:bottom-6">
+<p class="label pointer-events-none fixed right-4 bottom-4 z-30 bg-bg/85 px-2 py-0.5 sm:right-8 sm:bottom-6">
   <span class="sr-only">Room {room} of {wings.length}:</span>
   <span aria-hidden="true">( {pad(room)} / {pad(wings.length)} )</span>
-  <span class="sr-only">{wings[room - 1].title}</span>
+  <span class="sr-only">{plain(wings[room - 1].title)}</span>
 </p>

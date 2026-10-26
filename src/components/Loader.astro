@@ -3,14 +3,15 @@
 // settles pointing north, and "Loading exhibition 0% → 100%".
 // Only shown when motion is on (see the `motion` class in Layout).
 import { site } from '../data/site';
+import { plain } from '../lib/content';
 ---
 
 <div
   data-loader
   aria-hidden="true"
-  class="fixed inset-0 z-[100] hidden flex-col items-center justify-center gap-10 bg-wall [.motion_&]:flex"
+  class="fixed inset-0 z-[100] hidden flex-col items-center justify-center gap-10 bg-bg [.motion_&]:flex"
 >
-  <p class="font-display text-lg tracking-[0.25em] uppercase">{site.title}</p>
+  <p class="font-display text-lg tracking-[0.25em] uppercase">{plain(site.title)}</p>
 
   <svg viewBox="0 0 100 100" class="h-28 w-28 text-ink" fill="none">
     <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1" />
@@ -20,7 +21,7 @@ import { site } from '../data/site';
       <path d="M50 18 L54.5 50 L45.5 50 Z" fill="currentColor" />
       <path d="M50 82 L54.5 50 L45.5 50 Z" fill="none" stroke="currentColor" stroke-width="1" />
     </g>
-    <circle cx="50" cy="50" r="2.2" fill="var(--color-wall)" stroke="currentColor" stroke-width="1" />
+    <circle cx="50" cy="50" r="2.2" fill="var(--color-bg)" stroke="currentColor" stroke-width="1" />
   </svg>
 
   <p class="label">Loading exhibition <span data-loader-percent>0%</span></p>

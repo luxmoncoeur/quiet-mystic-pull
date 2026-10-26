@@ -2,7 +2,8 @@
 // Edit the "(…)" placeholders here; the pages read everything from this file.
 
 export const site = {
-  title: 'The Version of Me That Kept Reaching',
+  // Wrap one word in *asterisks* to show it in the accent color.
+  title: 'The Version of Me That Kept *Reaching*',
   subtitle: 'a quiet, mystic pull',
   tagline: 'A digital art portfolio · GEARTS · 2026',
   description: 'Who Am I Becoming? A digital art portfolio for GEARTS, Art Appreciation.',
@@ -27,9 +28,9 @@ export const site = {
 // counter, and the floor directory.
 export const wings = [
   { href: '/', numeral: '', nav: '', title: 'Entrance' },
-  { href: '/part-1', numeral: 'I', nav: 'I', title: 'My Art Appreciation Journey' },
-  { href: '/part-2', numeral: 'II', nav: 'II', title: 'My Artistic Exploration' },
-  { href: '/reflection', numeral: 'III', nav: 'Reflection', title: 'Looking Forward: Who Am I Becoming?' },
+  { href: '/part-1', numeral: 'I', nav: 'I', title: 'My Art Appreciation *Journey*' },
+  { href: '/part-2', numeral: 'II', nav: 'II', title: 'My Artistic *Exploration*' },
+  { href: '/reflection', numeral: 'III', nav: 'Reflection', title: 'Looking Forward: Who Am I *Becoming*?' },
   { href: '/appendices', numeral: 'IV', nav: 'Appendices', title: 'Appendices' },
 ] as const;
 

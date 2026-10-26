@@ -1,5 +1,7 @@
 ---
 // Previous / next in exhibition order, plus an optional "back" link.
+import { plain } from '../lib/content';
+
 interface Link {
   href: string;
   label: string;
@@ -21,20 +23,20 @@ const { prev, next, back } = Astro.props;
         prev && (
           <a href={prev.href} class="group block">
             <span class="label text-muted">← Previous</span>
-            <span class="block font-display text-2xl group-hover:underline">{prev.label}</span>
+            <span class="block font-display text-2xl transition-colors group-hover:text-accent">{plain(prev.label)}</span>
           </a>
         )
       }
     </div>
     <div class="sm:text-center">
-      {back && <a href={back.href} class="label underline-offset-4 hover:underline">{back.label}</a>}
+      {back && <a href={back.href} class="label underline-offset-4 transition-colors hover:text-accent hover:underline">{back.label}</a>}
     </div>
     <div class="sm:text-right">
       {
         next && (
           <a href={next.href} class="group block">
             <span class="label text-muted">Next →</span>
-            <span class="block font-display text-2xl group-hover:underline">{next.label}</span>
+            <span class="block font-display text-2xl transition-colors group-hover:text-accent">{plain(next.label)}</span>
           </a>
         )
       }

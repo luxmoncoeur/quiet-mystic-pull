@@ -2,6 +2,8 @@ import { getCollection } from 'astro:content';
 
 export const pad = (n: number) => String(n).padStart(2, '0');
 
+export { plain, splitAccent } from './accent';
+
 export const isExternal = (href: string) => /^https?:\/\//.test(href);
 
 export const formatDate = (date: Date) =>

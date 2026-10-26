@@ -1,0 +1,14 @@
+---
+// Renders a title where one word can be marked with asterisks to show in the
+// accent color: "The Version of Me That Kept *Reaching*". Only the first marked
+// word is colored (at most one per title); any other asterisks are dropped.
+import { splitAccent } from '../lib/content';
+
+interface Props {
+  text: string;
+}
+
+const { before, accent, after } = splitAccent(Astro.props.text);
+---
+
+{before}{accent && <span class="text-accent">{accent}</span>}{after}
