@@ -1,0 +1,64 @@
+---
+// Floating "← back" button in the bottom-left corner, on every page but the
+// entrance. If you clicked here from another page of the site, it takes you back
+// to that page and is labeled with its name. Otherwise (opened directly, or JS
+// off) it goes one level up: a work → its wing, a wing → the entrance.
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const parents: [RegExp, string, string][] = [
+  [/^\/part-1\/.+/, '/part-1', 'Part I'],
+  [/^\/part-2\/.+/, '/part-2', 'Part II'],
+  [/^\/appendices\/.+/, '/appendices', 'Appendices'],
+  [/^\/.+/, '/', 'Entrance'],
+];
+const parent = parents.find(([pattern]) => pattern.test(path));
+---
+
+{
+  parent && (
+    <a
+      href={parent[1]}
+      data-back
+      class="label fixed bottom-4 left-4 z-30 max-w-[60vw] truncate border border-border bg-surface/90 px-3 py-1.5 shadow-[0_10px_24px_-16px_var(--shadow)] backdrop-blur-sm transition-colors hover:border-accent hover:text-accent sm:bottom-6 sm:left-8"
+    >
+      ← <span data-back-label>{parent[2]}</span>
+    </a>
+  )
+}
+
+<script>
+  // Every page remembers its own short name, so the next page's back button can say
+  // where it returns to. Names are kept for this tab only (sessionStorage).
+  const here = location.pathname.replace(/\/$/, '') || '/';
+  const name =
+    here === '/'
+      ? 'Entrance'
+      : (document.querySelector('h1')?.textContent ?? document.title.split(' · ')[0]).replace(/\s+/g, ' ').trim();
+  try {
+    sessionStorage.setItem(`page-name:${here}`, name);
+  } catch {
+    // Storage blocked: the button just keeps its "one level up" label.
+  }
+
+  // Every back link on the page (the corner button, and the one at the top of work pages).
+  const from = document.referrer && new URL(document.referrer);
+  const fromPath = from && from.origin === location.origin ? from.pathname.replace(/\/$/, '') || '/' : null;
+  if (fromPath && fromPath !== here) {
+    let fromName: string | null = null;
+    try {
+      fromName = sessionStorage.getItem(`page-name:${fromPath}`);
+    } catch {}
+    document.querySelectorAll<HTMLAnchorElement>('[data-back]').forEach((back) => {
+      back.href = fromPath;
+      back.querySelector('[data-back-label]')!.textContent = fromName ?? 'the previous page';
+      back.title = `Back to ${fromName ?? 'the previous page'}`;
+      // Use real history when possible, so scroll position comes back too.
+      back.addEventListener('click', (e) => {
+        if (history.length > 1) {
+          e.preventDefault();
+          history.back();
+        }
+      });
+    });
+  }
+</script>

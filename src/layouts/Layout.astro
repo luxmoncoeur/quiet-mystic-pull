@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import PageCounter from '../components/PageCounter.astro';
 import Lightbox from '../components/Lightbox.astro';
+import BackButton from '../components/BackButton.astro';
 import { site } from '../data/site';
 import { plain } from '../lib/content';
 
@@ -51,6 +52,7 @@ const fullTitle = plain(title ? `${title} · ${site.title}` : site.title);
       <slot />
     </main>
     <slot name="after" />
+    <BackButton />
     <PageCounter room={room} />
     <Lightbox />
     <script>

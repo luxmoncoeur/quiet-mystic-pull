@@ -1,15 +1,20 @@
 ---
 number: 6
-title: "Balota Written Analysis"
-type: "(type of activity)"
-medium: "(medium)"
-date: "(month year)"
-authorship: Individual # or Group — then add group: and role:
+title: "Balota: Artwork *Analysis*"
+type: "Artwork analysis"
+medium: "Video and document"
+date: "September 29, 2026"
+authorship: Group
+group: "(Group name): (members, as listed on the document's cover)"
+role: "I interpreted the artwork by observing and analyzing its components and their meanings to understand the messages and ideas the artists conveyed."
 room: room-2
-# document: /art/part1/balota-written-analysis.pdf  # put the PDF in public/art/part1/ to link it
+document: /art/part1/balota-written-analysis.pdf
 media:
   - src: /art/part1/balota-written-analysis.webp
-    alt: "(describe the first page of the analysis)"
+    alt: "Cover page of the written artwork analysis of Balota (2024), Faith Colleges, College of Computing and Information Technology, listing the group members and the instructor."
+videos:
+  - title: "Balota: Artwork Analysis (video)"
+    youtube: "" # YouTube video ID, to follow
 ---
 
-(One or two factual sentences about this work: what the activity was and what you made.)
+This collaborative artwork analysis uses five approaches: observation, analysis, contextualization, interpretation, and judgment. Through them, our group observed the artwork, analyzed its components, understood its context, interpreted its meanings, and judged its effectiveness.

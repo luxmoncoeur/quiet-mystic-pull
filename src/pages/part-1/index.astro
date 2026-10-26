@@ -1,4 +1,7 @@
 ---
+import { render } from 'astro:content';
+import { join } from 'node:path';
+import sharp from 'sharp';
 import Layout from '../../layouts/Layout.astro';
 import SectionHeader from '../../components/SectionHeader.astro';
 import SkipLink from '../../components/SkipLink.astro';
@@ -14,6 +17,39 @@ const activityTypes = [...new Set(works.map((w) => w.data.type).filter((t): t is
 const rooms = part1Rooms
   .map((room) => ({ ...room, works: works.filter((w) => w.data.room === room.id) }))
   .filter((room) => room.works.length > 0);
+
+// Vary the hang like a real wall, without leaving empty wall: the image column is
+// only as wide as the image, and the label + caption fill the rest of the row.
+// Sides, sizes, and label heights change from work to work; phones stack.
+const left = 'lg:grid-cols-[auto_minmax(20rem,1fr)]';
+const right = 'lg:grid-cols-[minmax(20rem,1fr)_auto]';
+const hangs = [
+  { li: left, img: 'lg:max-h-[84svh]', art: '', text: 'lg:self-end' }, // large, left, label low
+  { li: right, img: 'lg:max-h-[72svh]', art: 'lg:order-2', text: 'lg:order-1 lg:self-start' }, // medium, right, label high
+  { li: left, img: 'lg:max-h-[64svh]', art: '', text: 'lg:self-center' }, // smaller, left, label middle
+  { li: right, img: 'lg:max-h-[78svh]', art: 'lg:order-2', text: 'lg:order-1 lg:self-end' }, // large, right, label low
+];
+
+// Each work's caption shows on the wall beside its label.
+const captions = Object.fromEntries(
+  await Promise.all(works.map(async (w) => [w.id, (await render(w)).Content] as const)),
+);
+
+// Wide images get their own layouts so there's no empty wall under them:
+// - "stacked": a large wide image runs full width, with the label and caption
+//   side by side below it (their order alternates).
+// - "split": a small wide image (under 1200px, which would blur at full width)
+//   sits on the left with its caption under it, the label on the right.
+// Portrait and square images use the side-by-side hangs above.
+const shapes = Object.fromEntries(
+  await Promise.all(
+    works.map(async (w) => {
+      const { width = 1, height = 1 } = await sharp(join('public', w.data.media[0].src)).metadata();
+      const wide = width / height >= 1.3;
+      return [w.id, !wide ? 'side' : width >= 1200 ? 'stacked' : 'split'] as const;
+    }),
+  ),
+);
 ---
 
 <Layout title={`Part ${wing.numeral}: ${wing.title}`} room={2}>
@@ -30,26 +66,87 @@ const rooms = part1Rooms
   <div id="rooms" class="scroll-mt-24">
     {
       rooms.map((room, i) => (
-        <section class="pt-32" aria-labelledby={`${room.id}-heading`}>
+        <section class="pt-24" aria-labelledby={`${room.id}-heading`}>
           <h2 id={`${room.id}-heading`} class="label" data-reveal="fade">
             ( Room {i + 1} · {room.name} )
           </h2>
           <p class="mt-4 max-w-2xl" data-reveal>{room.note}</p>
 
-          <ol class="mt-16 space-y-32">
+          <ol class="mt-12 space-y-20 lg:space-y-24">
             {room.works.map((work) => {
               const href = `/part-1/${work.id}`;
               const [main] = work.data.media;
+              const hang = hangs[(work.data.number - 1) % hangs.length];
+              const Caption = captions[work.id];
+              const shape = shapes[work.id];
+              const flip = work.data.number % 2 === 0;
+              const image = (extra: string) => (
+                <a href={href} data-reveal class="block overflow-hidden">
+                  <img
+                    src={main.src}
+                    alt={main.alt}
+                    loading="lazy"
+                    decoding="async"
+                    class:list={[
+                      'block h-auto w-full bg-transparent transition-transform duration-1000 ease-out motion-safe:hover:scale-[1.02]',
+                      extra,
+                    ]}
+                  />
+                </a>
+              );
+              const label = (
+                <div>
+                  <p class="font-display text-7xl leading-none text-accent" aria-hidden="true">
+                    {pad(work.data.number)}
+                  </p>
+                  <MuseumLabel work={work.data} heading="h3" href={href} showNumber={false} />
+                </div>
+              );
+              const caption = (
+                <div class="prose-body max-w-prose">
+                  <Caption />
+                </div>
+              );
+
+              if (shape === 'stacked')
+                return (
+                  <li>
+                    {image('lg:max-h-[86svh] lg:object-contain')}
+                    <div class="mt-8 grid gap-8 lg:mt-10 lg:grid-cols-2 lg:gap-12" data-reveal>
+                      <div class:list={[flip && 'lg:order-2']}>{label}</div>
+                      <div class:list={['lg:pt-20', flip && 'lg:order-1']}>{caption}</div>
+                    </div>
+                  </li>
+                );
+
+              if (shape === 'split')
+                return (
+                  <li class="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(20rem,1fr)] lg:gap-12">
+                    <div>
+                      {image('')}
+                      <div class="mt-8" data-reveal>{caption}</div>
+                    </div>
+                    <div data-reveal>{label}</div>
+                  </li>
+                );
+
               return (
-                <li class="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-end">
-                  <a href={href} data-reveal class="block overflow-hidden">
-                    <img src={main.src} alt={main.alt} loading="lazy" decoding="async" class="w-full transition-transform duration-1000 ease-out motion-safe:hover:scale-[1.02]" />
+                <li class:list={['grid gap-8 lg:gap-12', hang.li]}>
+                  <a href={href} data-reveal class:list={['block overflow-hidden', hang.art]}>
+                    <img
+                      src={main.src}
+                      alt={main.alt}
+                      loading="lazy"
+                      decoding="async"
+                      class:list={[
+                        'block h-auto w-full bg-transparent transition-transform duration-1000 ease-out motion-safe:hover:scale-[1.02] lg:w-auto lg:max-w-[58vw]',
+                        hang.img,
+                      ]}
+                    />
                   </a>
-                  <div data-reveal>
-                    <p class="font-display text-7xl leading-none text-accent" aria-hidden="true">
-                      {pad(work.data.number)}
-                    </p>
-                    <MuseumLabel work={work.data} heading="h3" href={href} showNumber={false} />
+                  <div data-reveal class={hang.text}>
+                    {label}
+                    <div class="mt-6">{caption}</div>
                   </div>
                 </li>
               );

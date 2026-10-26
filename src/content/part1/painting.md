@@ -1,14 +1,15 @@
 ---
-number: 2
-title: "Painting"
-type: "(type of activity)"
-medium: "(medium)"
-date: "(month year)"
-authorship: Individual # or Group — then add group: and role:
-room: room-1
+number: 8
+title: "Mona Lisa: Reimagined in Rococo *Reverie*"
+type: "Painting"
+medium: "Acrylic paint"
+date: "October 6, 2026"
+authorship: Individual
+room: room-2
+highlight: true # shows in the landing hallway
 media:
   - src: /art/part1/painting.webp
-    alt: "(describe what the artwork shows)"
+    alt: "A reinterpretation of the Mona Lisa in soft pastel pink and violet, with the same pose and landscape as the original."
 ---
 
-(One or two factual sentences about this work: what the activity was and what you made.)
+This painting is a reinterpretation of Leonardo da Vinci's famous work *Mona Lisa*. It is painted in lighter pastel shades, more in the Rococo style than the Renaissance one. However, the pink and violet colors in the pastel are combined with the same position and landscape as in the original picture.

@@ -35,10 +35,18 @@ const frames: (Frame & { href: string; alt: string })[] = [
 const directory = wings
   .filter((w) => w.numeral)
   .map((w) => {
-    const info: Record<string, { count?: string; thumb?: string }> = {
-      '/part-1': { count: `${part1.length} works`, thumb: part1[0]?.data.media[0].src },
-      '/part-2': { count: `${part2.length} works`, thumb: part2[0]?.data.media[0].src },
-      '/appendices': { count: `${appendices.length} folders`, thumb: appendices[0]?.data.items[0]?.image?.src },
+    // The hover preview: a small carousel of that wing's artworks. Placeholders (alt
+    // text still in parentheses) are left out until the real files are in.
+    const real = (m?: { src: string; alt: string }) => m && !m.alt.startsWith('(');
+    const roll = (media: ({ src: string; alt: string } | undefined)[]) =>
+      media.filter(real).map((m) => m!.src).slice(0, 10);
+    const info: Record<string, { count?: string; roll?: string[] }> = {
+      '/part-1': { count: `${part1.length} works`, roll: roll(part1.map((w) => w.data.media[0])) },
+      '/part-2': { count: `${part2.length} works`, roll: roll(part2.flatMap((w) => w.data.media)) },
+      '/appendices': {
+        count: `${appendices.length} folders`,
+        roll: roll(appendices.flatMap((a) => a.data.items.map((item) => item.image))),
+      },
     };
     return { ...w, ...info[w.href] };
   });
@@ -109,19 +117,25 @@ const artForms = part2.map((w) => w.data.type ?? w.data.title);
         directory.map((w) => (
           <li class="border-t border-ink" data-reveal>
             <a href={w.href} class="dir-row relative block py-6 transition-colors duration-500 hover:text-accent sm:py-8">
-              <span class="dir-inner flex flex-wrap items-baseline gap-x-6 gap-y-2">
-                <span class="label w-16 shrink-0">( {w.numeral} )</span>
-                <span class="flex-1 font-display text-3xl leading-tight sm:text-5xl lg:text-6xl">{plain(w.title)}</span>
+              <span class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
+                <span class="dir-inner flex flex-1 items-baseline gap-x-6">
+                  <span class="label w-16 shrink-0">( {w.numeral} )</span>
+                  <span class="flex-1 font-display text-3xl leading-tight sm:text-5xl lg:text-6xl">{plain(w.title)}</span>
+                </span>
                 {w.count && <span class="label">{w.count}</span>}
               </span>
-              {w.thumb && (
-                <img
-                  src={w.thumb}
-                  alt=""
+              {w.roll && w.roll.length > 0 && (
+                <span
                   aria-hidden="true"
-                  loading="lazy"
-                  class="dir-thumb pointer-events-none absolute top-1/2 right-28 hidden h-28 w-auto -rotate-2 border-4 border-ink lg:block"
-                />
+                  class="dir-thumb pointer-events-none absolute top-1/2 right-28 hidden h-36 w-28 -rotate-2 overflow-hidden border-4 border-ink bg-ink lg:block"
+                >
+                  {/* The last slide repeats the first so the loop slides on instead of rewinding. */}
+                  <span data-carousel-track class="flex h-full">
+                    {[...w.roll, w.roll[0]].map((src) => (
+                      <img src={src} alt="" loading="lazy" class="h-full w-full shrink-0 bg-transparent object-cover" />
+                    ))}
+                  </span>
+                </span>
               )}
             </a>
           </li>
@@ -144,3 +158,40 @@ const artForms = part2.map((w) => w.data.type ?? w.data.title);
     </div>
   </footer>
 </Layout>
+
+<script>
+  // Floor directory: while a row is hovered (or focused), its preview carousel
+  // slides to the next artwork every second. Still with reduced motion.
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<HTMLElement>('.dir-row').forEach((row) => {
+    const track = row.querySelector<HTMLElement>('[data-carousel-track]');
+    const slides = track ? track.children.length - 1 : 0; // minus the repeated first slide
+    if (!track || slides < 2) return;
+
+    let index = 0;
+    let timer: number | undefined;
+    const slideTo = (i: number, animate = true) => {
+      index = i;
+      track.style.transition = animate ? 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)' : 'none';
+      track.style.transform = `translateX(-${index * 100}%)`;
+    };
+    // After sliding onto the repeated first slide, jump back to the real one unseen.
+    track.addEventListener('transitionend', () => {
+      if (index === slides) slideTo(0, false);
+    });
+
+    const start = () => {
+      if (still.matches || timer) return;
+      timer = window.setInterval(() => slideTo(index + 1), 1000);
+    };
+    const stop = () => {
+      window.clearInterval(timer);
+      timer = undefined;
+    };
+    row.addEventListener('mouseenter', start);
+    row.addEventListener('focus', start);
+    row.addEventListener('mouseleave', stop);
+    row.addEventListener('blur', stop);
+  });
+</script>

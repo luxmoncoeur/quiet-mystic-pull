@@ -5,6 +5,7 @@ import FactCard from '../../components/FactCard.astro';
 import PrevNext from '../../components/PrevNext.astro';
 import VideoEmbed from '../../components/VideoEmbed.astro';
 import AccentTitle from '../../components/AccentTitle.astro';
+import Window from '../../components/Window.astro';
 import { getAppendices, getPart2, pad } from '../../lib/content';
 
 export async function getStaticPaths() {
@@ -27,25 +28,59 @@ const { Content } = await render(work);
 const [hero, ...gallery] = work.data.media;
 const style = work.data.gallery_style;
 const link = (w?: typeof work) => w && { href: `/part-2/${w.id}`, label: w.data.title };
+const fileName = (src: string) => src.split('/').pop() ?? src;
 
+// Scatter the journey windows a little, like files on a desktop: a small tilt and
+// a staggered drop per window (wide screens only). Hover straightens one out.
+const tilts = [-1.6, 1.2, -0.6, 1.8, -1.2, 0.8, -0.4];
+const drops = [0, 10, 4, 14, 2, 8, 6];
+
+// In the grid layouts, a last window left alone on its row stretches across the
+// leftover columns (with a wider crop) so the collection ends flush.
+const gridded = style === 'contact-sheet' || style === 'grid';
+const finale = (i: number) => {
+  if (!gridded || i !== gallery.length - 1) return { li: '', img: '', flat: false };
+  const aloneIn2 = gallery.length % 2 === 1;
+  const aloneIn3 = style === 'contact-sheet' && gallery.length % 3 === 1;
+  return {
+    li: [aloneIn2 && 'sm:col-span-2', aloneIn3 ? 'lg:col-span-3' : aloneIn2 && 'lg:col-span-1'].filter(Boolean).join(' '),
+    img: [aloneIn2 && 'sm:aspect-[16/9]', aloneIn3 ? 'lg:aspect-[16/7]' : aloneIn2 && 'lg:aspect-[4/3]'].filter(Boolean).join(' '),
+    flat: aloneIn2 || aloneIn3,
+  };
+};
+
+// The journey collection: each piece is a small window; clicking opens it as a popup.
 const galleryClass = {
-  masonry: 'columns-1 gap-4 sm:columns-2 [&>li]:mb-4 [&>li]:break-inside-avoid',
-  'contact-sheet': 'grid grid-cols-2 gap-4 sm:grid-cols-3',
-  carousel: 'flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 [&>li]:w-4/5 [&>li]:shrink-0 [&>li]:snap-start sm:[&>li]:w-1/2',
-  grid: 'grid gap-4 sm:grid-cols-2',
+  masonry: 'columns-1 gap-6 sm:columns-2 lg:columns-3 [&>li]:mb-6 [&>li]:break-inside-avoid',
+  'contact-sheet': 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3',
+  carousel:
+    'flex snap-x snap-mandatory scroll-px-4 gap-6 overflow-x-auto px-1 pt-3 pb-6 [&>li]:w-4/5 [&>li]:shrink-0 [&>li]:snap-start sm:[&>li]:w-1/3',
+  grid: 'grid gap-6 sm:grid-cols-2',
 }[style];
 ---
 
 <Layout title={work.data.title} room={3}>
   <article>
     <!-- HERO -->
-    <header class="pt-32">
+    <header class="pt-28">
+      <a
+        href="/part-2"
+        data-back
+        class="label inline-flex items-center gap-2 border border-border bg-surface px-3 py-1.5 transition-colors hover:border-accent hover:text-accent"
+      >
+        ← Back to <span data-back-label>Part II</span>
+      </a>
+      <div class="mt-8"></div>
       <p class="label" data-reveal="fade">{pad(work.data.number)} / {pad(total)}</p>
       <h1 data-split class="mt-6 font-display text-6xl leading-[0.95] sm:text-8xl lg:text-9xl"><AccentTitle text={work.data.title} /></h1>
       {work.data.type && <p class="label mt-6" data-reveal="fade">{work.data.type}</p>}
-      <a href={hero.src} data-lightbox data-reveal class="mt-12 block overflow-hidden">
-        <img src={hero.src} alt={hero.alt} data-zoom class="max-h-[90svh] w-full bg-transparent object-contain" />
-      </a>
+      <div data-reveal class="mt-12">
+        <Window title={`featured · ${work.id}`} sticker="featured">
+          <a href={hero.src} data-lightbox data-group={work.id} data-file={`featured · ${work.id}`} class="block overflow-hidden bg-bg">
+            <img src={hero.src} alt={hero.alt} data-zoom class="max-h-[80svh] w-full bg-transparent object-contain" />
+          </a>
+        </Window>
+      </div>
     </header>
 
     <div class="mt-24 grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
@@ -74,56 +109,85 @@ const galleryClass = {
           )
         }
 
-        <!-- SUB-GALLERY -->
-        {
-          gallery.length > 0 && (
-            <section aria-labelledby="gallery-heading">
-              <h2 id="gallery-heading" class="label">( The series )</h2>
-              <ul
-                class:list={['mt-6', galleryClass]}
-                tabindex={style === 'carousel' ? 0 : undefined}
-                aria-label={style === 'carousel' ? 'Scrollable gallery' : undefined}
-              >
-                {gallery.map((img) => (
-                  <li data-reveal>
-                    <a href={img.src} data-lightbox class="block">
-                      <img src={img.src} alt={img.alt} loading="lazy" decoding="async" class="w-full" />
-                    </a>
-                    {img.details && <p class="label mt-2">{img.details.join(' / ')}</p>}
-                    {img.caption && <p class="mt-1">{img.caption}</p>}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        }
-
-        {
-          work.data.videos.length > 0 && (
-            <section aria-labelledby="video-heading">
-              <h2 id="video-heading" class="label">( Video )</h2>
-              <div class="mt-6 space-y-12">
-                {work.data.videos.map((v) => (
-                  <VideoEmbed {...v} />
-                ))}
-              </div>
-            </section>
-          )
-        }
-
-        <!-- PROOF LINK -->
-        {
-          appendix && (
-            <a
-              href={`/appendices/${appendix.data.number}`}
-              data-reveal
-              class="block border border-ink p-8 font-display text-3xl transition-colors duration-500 hover:border-accent hover:bg-accent hover:text-bg sm:text-5xl"
-            >
-              See the process evidence → Appendix {appendix.data.number}
-            </a>
-          )
-        }
       </div>
+    </div>
+
+    <!-- THE JOURNEY: the rest of the collection, as windows -->
+    {
+      gallery.length > 0 && (
+        <section aria-labelledby="gallery-heading" class="mt-32">
+          <div class="flex flex-wrap items-baseline justify-between gap-4">
+            <h2 id="gallery-heading" class="label" data-reveal="fade">
+              ( The journey · {gallery.length} files )
+            </h2>
+            <p class="label text-muted" data-reveal="fade">open any file to look closer</p>
+          </div>
+          <ul
+            class:list={['mt-8', galleryClass]}
+            tabindex={style === 'carousel' ? 0 : undefined}
+            aria-label={style === 'carousel' ? 'Scrollable gallery' : undefined}
+          >
+            {gallery.map((img, i) => (
+              <li
+                data-reveal
+                class:list={['lg:mt-(--drop)', finale(i).li]}
+                style={`--tilt: ${finale(i).flat ? 0 : tilts[i % tilts.length]}deg; --drop: ${drops[i % drops.length]}px`}
+              >
+                <Window
+                  title={fileName(img.src)}
+                  footer={img.details?.join(' / ')}
+                  class="transition-transform duration-500 lg:rotate-(--tilt) lg:hover:rotate-0 motion-safe:hover:-translate-y-1"
+                >
+                  <a
+                    href={img.src}
+                    data-lightbox
+                    data-group={work.id}
+                    data-details={img.details?.join(' / ')}
+                    class="block bg-bg"
+                  >
+                    <img
+                      src={img.src}
+                      alt={img.alt}
+                      loading="lazy"
+                      decoding="async"
+                      class:list={['w-full bg-transparent', style === 'contact-sheet' && 'aspect-[4/3] object-cover', finale(i).img]}
+                    />
+                  </a>
+                </Window>
+                {img.caption && <p class="mt-2">{img.caption}</p>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <div class="mt-32 space-y-24">
+    {
+      work.data.videos.length > 0 && (
+        <section aria-labelledby="video-heading">
+          <h2 id="video-heading" class="label">( Video )</h2>
+          <div class="mt-6 space-y-12">
+            {work.data.videos.map((v) => (
+              <VideoEmbed {...v} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <!-- PROOF LINK -->
+    {
+      appendix && (
+        <a
+          href={`/appendices/${appendix.data.number}`}
+          data-reveal
+          class="block border border-ink p-8 font-display text-3xl transition-colors duration-500 hover:border-accent hover:bg-accent hover:text-bg sm:text-5xl"
+        >
+          See the process evidence → Appendix {appendix.data.number}
+        </a>
+      )
+    }
     </div>
   </article>
 

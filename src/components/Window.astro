@@ -1,0 +1,33 @@
+---
+// A small desktop-style window (after Cindy Ly's portfolio): a title bar with
+// three dots and a file name, around any content, with an optional footer row.
+interface Props {
+  title: string;
+  sticker?: string; // a small tag stuck to the corner, e.g. "featured"
+  footer?: string; // a slash-label row under the content
+  class?: string;
+}
+
+const { title, sticker, footer, class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    'relative rounded-md border border-border bg-surface shadow-[0_14px_34px_-22px_var(--shadow)]',
+    className,
+  ]}
+>
+  <div class="relative flex items-center border-b border-border px-3 py-2">
+    <span aria-hidden="true" class="flex gap-1.5">
+      <i class="size-2.5 rounded-full bg-border"></i>
+      <i class="size-2.5 rounded-full bg-border"></i>
+      <i class="size-2.5 rounded-full bg-border"></i>
+    </span>
+    <p class="label absolute inset-x-14 truncate text-center text-muted">{title}</p>
+  </div>
+  <div class="overflow-hidden rounded-b-md">
+    <slot />
+  </div>
+  {footer && <p class="label border-t border-border px-3 py-2 text-muted">{footer}</p>}
+  {sticker && <span class="sticker absolute -top-3 -right-2 rotate-3">{sticker}</span>}
+</div>

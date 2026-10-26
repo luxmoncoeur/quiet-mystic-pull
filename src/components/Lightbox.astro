@@ -1,41 +1,133 @@
 ---
-// One shared lightbox for the whole site. Any link with `data-lightbox` that points
-// at an image opens it here, with its alt text as the caption. Without JS the
-// link simply opens the image file.
+// One shared popup for the whole site, styled as a desktop window. Any link with
+// `data-lightbox` that points at an image opens it here: the file name sits in the
+// title bar, the alt text (and `data-details`, if set) is the caption. Links that
+// share a `data-group` can be stepped through with the arrows or ← / → keys.
+// Without JS the link simply opens the image file.
 ---
 
 <dialog
   id="lightbox"
   aria-label="Enlarged image"
-  class="m-auto max-h-none max-w-none bg-transparent p-0 backdrop:bg-(--scrim)"
+  class="lightbox m-auto max-h-[94svh] w-[min(64rem,calc(100vw-2rem))] max-w-none overflow-visible bg-transparent p-0 backdrop:bg-(--scrim)"
 >
-  <figure class="flex max-h-[100svh] w-screen flex-col items-center gap-3 p-4 sm:p-8">
-    <img alt="" class="max-h-[80svh] w-auto max-w-full object-contain" />
-    <figcaption class="max-w-2xl text-center text-(--on-scrim)"></figcaption>
-  </figure>
-  <form method="dialog" class="absolute top-4 right-4">
-    <button class="label bg-surface px-3 py-1 text-ink">Close</button>
-  </form>
+  <div class="flex max-h-[94svh] flex-col rounded-md border border-border bg-surface text-ink shadow-2xl">
+    <div class="relative flex items-center border-b border-border px-3 py-2">
+      <div class="flex items-center gap-1.5">
+        <!-- Mac-style close: the red dot is a real button; its × shows on hover or keyboard focus. -->
+        <form method="dialog" class="flex">
+          <button
+            aria-label="Close"
+            title="Close"
+            class="group/close relative grid size-3.5 place-items-center rounded-full bg-accent after:absolute after:-inset-2 after:content-['']"
+          >
+            <svg
+              viewBox="0 0 10 10"
+              aria-hidden="true"
+              class="size-2 text-bg opacity-0 transition-opacity group-hover/close:opacity-100 group-focus-visible/close:opacity-100"
+            >
+              <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+          </button>
+        </form>
+        <i aria-hidden="true" class="size-3.5 rounded-full bg-border"></i>
+        <i aria-hidden="true" class="size-3.5 rounded-full bg-border"></i>
+      </div>
+      <p data-lightbox-file class="label absolute inset-x-16 truncate text-center text-muted"></p>
+      <form method="dialog" class="ml-auto">
+        <button autofocus class="label text-muted transition-colors hover:text-accent">close</button>
+      </form>
+    </div>
+
+    <figure class="flex min-h-0 flex-1 flex-col">
+      <div class="flex min-h-0 flex-1 items-center justify-center bg-bg p-3 sm:p-5">
+        <img alt="" class="max-h-[68svh] w-auto max-w-full bg-transparent object-contain" />
+      </div>
+      <figcaption class="border-t border-border px-4 py-3">
+        <p data-lightbox-caption></p>
+        <p data-lightbox-details class="label mt-1 text-muted"></p>
+      </figcaption>
+    </figure>
+
+    <div data-lightbox-nav class="flex items-center justify-between border-t border-border px-4 py-2">
+      <button type="button" data-lightbox-prev class="label transition-colors hover:text-accent">← prev</button>
+      <p data-lightbox-count class="label text-muted"></p>
+      <button type="button" data-lightbox-next class="label transition-colors hover:text-accent">next →</button>
+    </div>
+  </div>
 </dialog>
 
 <script>
   const dialog = document.getElementById('lightbox') as HTMLDialogElement;
   const img = dialog.querySelector('img')!;
-  const caption = dialog.querySelector('figcaption')!;
+  const file = dialog.querySelector<HTMLElement>('[data-lightbox-file]')!;
+  const caption = dialog.querySelector<HTMLElement>('[data-lightbox-caption]')!;
+  const details = dialog.querySelector<HTMLElement>('[data-lightbox-details]')!;
+  const nav = dialog.querySelector<HTMLElement>('[data-lightbox-nav]')!;
+  const count = dialog.querySelector<HTMLElement>('[data-lightbox-count]')!;
+
+  let items: HTMLAnchorElement[] = [];
+  let index = 0;
+
+  function show(i: number) {
+    index = (i + items.length) % items.length;
+    const link = items[index];
+    const alt = link.querySelector('img')?.alt ?? '';
+    img.src = link.href;
+    img.alt = alt;
+    file.textContent = link.dataset.file ?? link.pathname.split('/').pop() ?? '';
+    caption.textContent = alt;
+    details.textContent = link.dataset.details ?? '';
+    details.hidden = !link.dataset.details;
+    count.textContent = `${index + 1} / ${items.length}`;
+  }
 
   document.addEventListener('click', (e) => {
     const link = (e.target as Element).closest<HTMLAnchorElement>('a[data-lightbox]');
     if (!link) return;
     e.preventDefault();
-    const alt = link.querySelector('img')?.alt ?? '';
-    img.src = link.href;
-    img.alt = alt;
-    caption.textContent = alt;
+    const group = link.dataset.group;
+    items = group
+      ? [...document.querySelectorAll<HTMLAnchorElement>(`a[data-lightbox][data-group="${CSS.escape(group)}"]`)]
+      : [link];
+    nav.hidden = items.length < 2;
+    show(items.indexOf(link));
     dialog.showModal();
   });
 
-  // Click outside the image closes it.
+  dialog.querySelector('[data-lightbox-prev]')!.addEventListener('click', () => show(index - 1));
+  dialog.querySelector('[data-lightbox-next]')!.addEventListener('click', () => show(index + 1));
+  dialog.addEventListener('keydown', (e) => {
+    if (items.length < 2) return;
+    if (e.key === 'ArrowLeft') show(index - 1);
+    if (e.key === 'ArrowRight') show(index + 1);
+  });
+
+  // Click outside the window closes it.
   dialog.addEventListener('click', (e) => {
-    if (e.target === dialog || e.target === dialog.querySelector('figure')) dialog.close();
+    if (e.target === dialog) dialog.close();
   });
 </script>
+
+<style>
+  /* The window opens with a small lift; skipped with reduced motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .lightbox[open] {
+      animation: window-open 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .lightbox[open]::backdrop {
+      animation: scrim-in 0.35s ease;
+    }
+  }
+  @keyframes window-open {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.97);
+    }
+  }
+  @keyframes scrim-in {
+    from {
+      opacity: 0;
+    }
+  }
+</style>

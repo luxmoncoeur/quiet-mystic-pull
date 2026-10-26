@@ -1,15 +1,15 @@
 ---
-number: 3
-title: "Coffee Painting"
-type: "(type of activity)"
-medium: "(medium)"
-date: "(month year)"
-authorship: Individual # or Group — then add group: and role:
+number: 4
+title: "When the Shore Went *Silent*"
+type: "Coffee painting"
+medium: "Coffee on Oslo paper"
+date: "August 4, 2026"
+authorship: Individual
 room: room-1
 highlight: true # shows in the landing hallway
 media:
   - src: /art/part1/coffee-painting.webp
-    alt: "(describe what the artwork shows)"
+    alt: "Coffee painting in brown washes on paper: a shoreline curving into the distance under a pale sky, with a few birds flying over the water."
 ---
 
-(One or two factual sentences about this work: what the activity was and what you made.)
+Using coffee as a painting medium, this atmospheric piece uses earthy shades and tones to explore the aftermath of retreating waves at a shore and the silence in which the voice of the sea is just as powerful as its presence.

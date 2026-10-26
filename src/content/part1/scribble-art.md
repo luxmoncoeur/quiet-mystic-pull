@@ -1,15 +1,15 @@
 ---
 number: 1
-title: "Scribble Art"
-type: "(type of activity)"
-medium: "(medium)"
-date: "(month year)"
-authorship: Individual # or Group — then add group: and role:
+title: "Nowhere Feels Like *Shore*"
+type: "Scribble art"
+medium: "Pen, oil pastel"
+date: "July 21, 2026"
+authorship: Individual
 room: room-1
 highlight: true # shows in the landing hallway
 media:
   - src: /art/part1/scribble-art.webp
-    alt: "(describe what the artwork shows)"
+    alt: "Scribble drawing in pen and blue oil pastel: dense looping lines fill the page like a deep sea, with two small dark figures near a pale yellow shoreline at the top. The word Tsunami is written in the corner."
 ---
 
-(One or two factual sentences about this work: what the activity was and what you made.)
+An ocean of lines and surging water hides the figure in the water, blurring the line between the figure and the disturbed sea surrounding it. It depicts the feeling of uncertainty, as if the only way of finding solid ground is getting buried underneath each wave.

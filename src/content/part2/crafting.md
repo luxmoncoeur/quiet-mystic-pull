@@ -1,23 +1,16 @@
 ---
 number: 3
-title: "(title)"
+title: "Lilies in *Blues*"
 type: "Crafting — fuzzy wire bouquet and paper rings" # art form
-medium: "(medium / materials)"
+medium: "Fuzzy wires, sticky notes (paper rings)"
 date: "(date made)"
 time_spent: "(time spent)"
 authorship: Individual
 familiar: false # only ONE Part II work may be true
-# familiar_reason: "(why this familiar work connects to the theme)"
 gallery_style: carousel # masonry | contact-sheet | carousel | grid
 media:
   - src: /art/part2/crafting/hero.webp
-    alt: "(describe the main piece)"
-  - src: /art/part2/crafting/gallery-01.webp
-    alt: "(describe this piece)"
-  - src: /art/part2/crafting/gallery-02.webp
-    alt: "(describe this piece)"
-  - src: /art/part2/crafting/gallery-03.webp
-    alt: "(describe this piece)"
+    alt: "A handmade bouquet of blue lilies shaped from fuzzy wire, in light and deep blue with white-edged petals, white stamens, and green leaves, with a tall blue flower spike behind."
 process:
   - src: /art/part2/crafting/process-1.webp
     alt: "(describe this stage)"
@@ -32,10 +25,10 @@ process:
     date: "(date)"
     caption: "(one-line factual caption)"
 videos:
-  - title: "(Making the bouquet)"
-    youtube: "" # YouTube video ID
-  - title: "(Paper rings)"
-    tiktok: "" # full TikTok video URL
+  - title: "Making the bouquet"
+    youtube: "" # YouTube video ID, to follow
+  - title: "Paper rings"
+    tiktok: "" # full TikTok video URL, to follow
 ---
 
-(Optional: one or two factual sentences about this work.)
+I've always loved flowers, so I decided to try making my own using fuzzy wire. I chose blue because it's my favorite color, and lilies because of how soft and graceful they look. In this piece, you will see a bouquet I shaped by hand, petal by petal, along with photos and a video of how it came together.
