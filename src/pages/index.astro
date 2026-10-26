@@ -1,73 +1,127 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Loader from '../components/Loader.astro';
+import Hallway3D from '../components/Hallway3D.astro';
 import SkipLink from '../components/SkipLink.astro';
 import Marquee from '../components/Marquee.astro';
 import { site, wings } from '../data/site';
-import { getPart1, getPart2 } from '../lib/content';
+import { getAppendices, getPart1, getPart2, pad } from '../lib/content';
+import type { Frame } from '../scripts/hallway';
 
 const part1 = await getPart1();
 const part2 = await getPart2();
+const appendices = await getAppendices();
 
-const counts: Record<string, string> = {
-  '/part-1': `${part1.length} works`,
-  '/part-2': `${part2.length} works`,
-};
-const directory = wings.filter((w) => w.numeral);
+// Hallway frames: Part I highlights, then every Part II main piece (6–8 total).
+const frames: (Frame & { href: string; alt: string })[] = [
+  ...part1
+    .filter((w) => w.data.highlight)
+    .map((w) => ({ ...w.data, href: `/part-1/${w.id}`, part: 'Part I' })),
+  ...part2.map((w) => ({ ...w.data, href: `/part-2/${w.id}`, part: 'Part II' })),
+]
+  .slice(0, 8)
+  .map((w) => ({
+    src: w.media[0].src,
+    alt: w.media[0].alt,
+    number: pad(w.number),
+    title: w.title,
+    part: w.part,
+    date: w.date,
+    medium: w.medium,
+    href: w.href,
+  }));
+
+const directory = wings
+  .filter((w) => w.numeral)
+  .map((w) => {
+    const info: Record<string, { count?: string; thumb?: string }> = {
+      '/part-1': { count: `${part1.length} works`, thumb: part1[0]?.data.media[0].src },
+      '/part-2': { count: `${part2.length} works`, thumb: part2[0]?.data.media[0].src },
+      '/appendices': { count: `${appendices.length} folders`, thumb: appendices[0]?.data.items[0]?.image?.src },
+    };
+    return { ...w, ...info[w.href] };
+  });
+
 const artForms = part2.map((w) => w.data.type ?? w.data.title);
 ---
 
 <Layout room={1}>
-  {/*
-    ==================================================================
-    STAGE 1 · LOADER (later)
-    Off-white screen, title in small caps, spinning compass needle,
-    "Loading exhibition 0% → 100%". Preloads the hallway textures.
-    ==================================================================
-  */}
+  <Loader />
 
-  <!-- STAGE 2 · HERO -->
-  <section class="relative flex min-h-svh flex-col items-center justify-center text-center" aria-labelledby="site-title">
-    {/* TODO: full-screen photo or render of the empty hallway goes behind this. */}
-    <div class="absolute top-24 left-0">
-      <SkipLink href="#exhibition-note" />
+  <Hallway3D slot="hero" frames={frames}>
+    <!-- HERO: sits over the first view down the hallway -->
+    <div data-hero class="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--color-wall)_0%,color-mix(in_srgb,var(--color-wall)_70%,transparent)_45%,transparent_75%)]"
+      >
+      </div>
+      <div class="absolute top-24 left-4 sm:left-8">
+        <SkipLink href="#exhibition-note" data-skip-walkthrough />
+      </div>
+      <h1 id="site-title" data-split class="relative max-w-6xl font-display text-6xl leading-[0.92] sm:text-8xl lg:text-[9rem]">
+        {site.title}
+      </h1>
+      <p class="relative mt-6 font-display text-xl italic sm:text-2xl" data-reveal="fade">{site.subtitle}</p>
+      <p class="label relative mt-6" data-reveal="fade">{site.tagline}</p>
+      <p class="label absolute bottom-10" data-reveal="fade">Scroll to enter ↓</p>
     </div>
-    <h1 id="site-title" class="font-display text-6xl leading-[0.95] sm:text-8xl lg:text-9xl">{site.title}</h1>
-    <p class="mt-6 font-display text-xl italic sm:text-2xl">{site.subtitle}</p>
-    <p class="label mt-6">{site.tagline}</p>
-    <p class="label absolute bottom-10">Scroll to enter ↓</p>
+  </Hallway3D>
+
+  <!-- Flat hallway: phones, reduced motion, or no WebGL. Hidden when the 3D runs. -->
+  <section aria-labelledby="hallway-heading" class="pt-16 [.hallway-3d_&]:hidden">
+    <h2 id="hallway-heading" class="label">( The hallway )</h2>
+    <ol class="-mx-4 mt-6 flex snap-x snap-mandatory scroll-px-4 gap-6 overflow-x-auto px-4 pb-6 sm:-mx-8 sm:scroll-px-8 sm:px-8" tabindex="0" aria-label="Works in the hallway, scroll sideways">
+      {
+        frames.map((f) => (
+          <li class="w-[75vw] max-w-sm shrink-0 snap-start">
+            <a href={f.href} class="group block">
+              <div class="aspect-[4/5] overflow-hidden border-[6px] border-ink">
+                <img src={f.src} alt={f.alt} loading="lazy" decoding="async" class="h-full w-full object-cover" />
+              </div>
+              <p class="label mt-3">
+                ( {f.number} ) · {f.part}
+              </p>
+              <p class="font-display text-2xl leading-tight group-hover:underline">{f.title}</p>
+              <p class="label text-muted">{[f.date, f.medium].filter(Boolean).join(' / ')}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
   </section>
 
-  {/*
-    ==================================================================
-    STAGE 3 · 3D HALLWAY (later)
-    Pinned, scroll-driven Three.js corridor (Hallway3D component).
-    Mobile / reduced-motion fallback: horizontal swipe row of the same
-    frames with museum labels.
-    ==================================================================
-  */}
-  <div id="hallway" aria-hidden="true"></div>
-
-  <!-- STAGE 4 · EXHIBITION NOTE -->
+  <!-- EXHIBITION NOTE -->
   <section id="exhibition-note" class="scroll-mt-24 py-32 sm:py-48" aria-labelledby="note-heading">
-    <p class="label">( Exhibition note · 01 )</p>
-    <h2 id="note-heading" class="mt-8 max-w-5xl font-display text-4xl leading-tight sm:text-6xl">
+    <p class="label" data-reveal="fade">( Exhibition note · 01 )</p>
+    <h2 id="note-heading" data-split class="mt-8 max-w-5xl font-display text-4xl leading-tight sm:text-6xl">
       {site.exhibitionNote.statement}
     </h2>
-    <p class="mt-10 max-w-2xl">{site.exhibitionNote.intro}</p>
+    <p class="mt-10 max-w-2xl" data-reveal>{site.exhibitionNote.intro}</p>
   </section>
 
-  <!-- STAGE 5 · FLOOR DIRECTORY -->
-  <section aria-labelledby="directory-heading" class="pb-16">
-    <h2 id="directory-heading" class="label">( Floor directory )</h2>
-    {/* TODO (motion step): on hover the row slides right and a small thumbnail appears. */}
+  <!-- FLOOR DIRECTORY -->
+  <section aria-labelledby="directory-heading" class="pb-24">
+    <h2 id="directory-heading" class="label" data-reveal="fade">( Floor directory )</h2>
     <ol class="mt-8 border-b border-ink">
       {
         directory.map((w) => (
-          <li class="border-t border-ink">
-            <a href={w.href} class="flex flex-wrap items-baseline gap-x-6 gap-y-2 py-6 hover:text-accent sm:py-8">
-              <span class="label w-16 shrink-0">( {w.numeral} )</span>
-              <span class="flex-1 font-display text-3xl leading-tight sm:text-5xl">{w.title}</span>
-              {counts[w.href] && <span class="label">{counts[w.href]}</span>}
+          <li class="border-t border-ink" data-reveal>
+            <a href={w.href} class="dir-row relative block py-6 sm:py-8">
+              <span class="dir-inner flex flex-wrap items-baseline gap-x-6 gap-y-2">
+                <span class="label w-16 shrink-0">( {w.numeral} )</span>
+                <span class="flex-1 font-display text-3xl leading-tight sm:text-5xl lg:text-6xl">{w.title}</span>
+                {w.count && <span class="label">{w.count}</span>}
+              </span>
+              {w.thumb && (
+                <img
+                  src={w.thumb}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  class="dir-thumb pointer-events-none absolute top-1/2 right-28 hidden h-28 w-auto -rotate-2 border-4 border-ink lg:block"
+                />
+              )}
             </a>
           </li>
         ))
@@ -77,11 +131,11 @@ const artForms = part2.map((w) => w.data.type ?? w.data.title);
 
   <Marquee words={artForms} label="Art forms tried" />
 
-  <!-- STAGE 6 · FOOTER / COLOPHON -->
+  <!-- FOOTER / COLOPHON -->
   <footer slot="after" class="mx-auto max-w-7xl border-t border-ink px-4 py-12 sm:px-8">
     <div class="flex flex-col gap-6 sm:flex-row sm:justify-between">
       <div>
-        <p class="font-display text-2xl">{site.footer.name}</p>
+        <p class="font-display text-3xl">{site.footer.name}</p>
         <p class="label mt-2">{site.footer.course} · {site.footer.section} · {site.footer.year}</p>
         <p class="mt-4 max-w-xl text-muted">{site.footer.credits}</p>
       </div>

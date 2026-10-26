@@ -1,0 +1,27 @@
+---
+// Landing loader: the title in small caps, a compass needle that spins and
+// settles pointing north, and "Loading exhibition 0% → 100%".
+// Only shown when motion is on (see the `motion` class in Layout).
+import { site } from '../data/site';
+---
+
+<div
+  data-loader
+  aria-hidden="true"
+  class="fixed inset-0 z-[100] hidden flex-col items-center justify-center gap-10 bg-wall [.motion_&]:flex"
+>
+  <p class="font-display text-lg tracking-[0.25em] uppercase">{site.title}</p>
+
+  <svg viewBox="0 0 100 100" class="h-28 w-28 text-ink" fill="none">
+    <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1" />
+    <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1 5.28" />
+    <text x="50" y="16" text-anchor="middle" font-size="7" font-family="IBM Plex Mono, monospace" fill="currentColor">N</text>
+    <g data-loader-needle>
+      <path d="M50 18 L54.5 50 L45.5 50 Z" fill="currentColor" />
+      <path d="M50 82 L54.5 50 L45.5 50 Z" fill="none" stroke="currentColor" stroke-width="1" />
+    </g>
+    <circle cx="50" cy="50" r="2.2" fill="var(--color-wall)" stroke="currentColor" stroke-width="1" />
+  </svg>
+
+  <p class="label">Loading exhibition <span data-loader-percent>0%</span></p>
+</div>

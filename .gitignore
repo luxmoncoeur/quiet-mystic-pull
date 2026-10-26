@@ -24,3 +24,6 @@ pnpm-debug.log*
 .idea/
 
 references/
+
+# raw artwork files before conversion (kept out of git)
+assets-raw/

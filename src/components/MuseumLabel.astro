@@ -7,9 +7,10 @@ interface Props {
   work: CollectionEntry<'part1'>['data'];
   heading?: 'h1' | 'h2' | 'h3';
   href?: string; // link the title, e.g. to the work page
+  showNumber?: boolean; // off where a big number already sits beside the label
 }
 
-const { work, heading: Heading = 'h3', href } = Astro.props;
+const { work, heading: Heading = 'h3', href, showNumber = true } = Astro.props;
 
 const rows = [
   ['type', work.type],
@@ -21,8 +22,8 @@ const rows = [
 ---
 
 <div class="border-t border-ink pt-4">
-  <p class="label">( {pad(work.number)} )</p>
-  <Heading class="mt-2 font-display text-3xl leading-tight sm:text-4xl">
+  {showNumber && <p class="label">( {pad(work.number)} )</p>}
+  <Heading class:list={['font-display text-3xl leading-tight sm:text-4xl', showNumber && 'mt-2']}>
     {href ? <a href={href} class="underline-offset-4 hover:underline">{work.title}</a> : work.title}
   </Heading>
 

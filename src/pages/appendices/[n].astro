@@ -40,7 +40,7 @@ const link = (a?: typeof appendix) =>
     <ol class="mt-8 space-y-16 border-l border-ink pl-6 sm:pl-10">
       {
         items.map((item) => (
-          <li class="grid gap-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
+          <li data-reveal class="grid gap-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
             <time datetime={item.date.toISOString().slice(0, 10)} class="label">
               {formatDate(item.date)}
             </time>

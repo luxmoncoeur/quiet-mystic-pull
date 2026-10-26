@@ -1,0 +1,54 @@
+---
+// The landing entrance: a full-screen section holding the 3D hallway canvas,
+// its museum labels, and the hero (passed in as the slot). The 3D only starts
+// on wide screens with motion allowed; otherwise this is just the hero and the
+// flat swipe row below takes over (see scripts/entrance.ts).
+import type { Frame } from '../scripts/hallway';
+import { site } from '../data/site';
+
+interface Props {
+  frames: Frame[];
+}
+
+const { frames } = Astro.props;
+
+// Safe to inline: "<" is escaped so content can't close the script tag.
+const json = JSON.stringify({
+  frames,
+  title: site.title,
+  subtitle: site.subtitle,
+  tagline: site.tagline,
+}).replace(/</g, '\\u003c');
+---
+
+<section data-entrance class="relative h-svh overflow-hidden" aria-labelledby="site-title">
+  <canvas data-hallway-canvas aria-hidden="true" class="absolute inset-0 hidden h-full w-full [.hallway-3d_&]:block"
+  ></canvas>
+
+  <div data-hallway-labels aria-hidden="true" class="pointer-events-none absolute inset-0 hidden [.hallway-3d_&]:block">
+    {
+      frames.map((f) => (
+        <div
+          data-hallway-label
+          class="absolute top-0 left-0 w-60 border-t border-ink bg-wall/85 px-3 pt-2 pb-3 opacity-0 backdrop-blur-sm will-change-transform"
+        >
+          <p class="label">
+            ( {f.number} ) · {f.part}
+          </p>
+          <p class="mt-1 font-display text-2xl leading-tight">{f.title}</p>
+          <p class="label mt-1 text-muted">{[f.date, f.medium].filter(Boolean).join(' / ')}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <slot />
+
+  <div data-hallway-wash aria-hidden="true" class="pointer-events-none absolute inset-0 bg-wall opacity-0"></div>
+
+  <script type="application/json" data-hallway-data set:html={json} />
+</section>
+
+<script>
+  import '../scripts/entrance';
+</script>

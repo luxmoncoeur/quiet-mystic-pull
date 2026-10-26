@@ -22,7 +22,7 @@ const link = (w?: typeof work) => w && { href: `/part-1/${w.id}`, label: w.data.
 
 <Layout title={work.data.title} room={2}>
   <article class="pt-32">
-    <a href={main.src} data-lightbox class="block">
+    <a href={main.src} data-lightbox data-reveal class="block">
       <img src={main.src} alt={main.alt} class="mx-auto max-h-[85svh] w-auto" />
     </a>
 
@@ -50,10 +50,19 @@ const link = (w?: typeof work) => w && { href: `/part-1/${w.id}`, label: w.data.
       )
     }
 
-    <div class="mt-16 grid gap-10 lg:grid-cols-2">
+    <div class="mt-16 grid gap-10 lg:grid-cols-2" data-reveal>
       <MuseumLabel work={work.data} heading="h1" />
       <div class="prose-body max-w-prose lg:pt-4">
         <Content />
+        {
+          work.data.document && (
+            <p>
+              <a href={work.data.document} target="_blank" rel="noopener noreferrer" class="label">
+                Open the full document ↗<span class="sr-only"> (opens in a new tab)</span>
+              </a>
+            </p>
+          )
+        }
       </div>
     </div>
   </article>

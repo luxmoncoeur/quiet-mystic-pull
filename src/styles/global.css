@@ -9,7 +9,7 @@
 @theme {
   --color-wall: #f3f0ea;
   --color-ink: #161616;
-  --color-muted: #7a766f;
+  --color-muted: #6b675f;
   --color-accent: #b5432f;
   --color-placeholder: #d6d2ca;
 
@@ -70,5 +70,88 @@
   .prose-body a {
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Motion. The `motion` class is added in <head> only when JS runs and
+   the visitor hasn't asked for reduced motion, so content is never
+   hidden for anyone else.
+   ------------------------------------------------------------------ */
+
+/* Room for descenders inside the word masks of split titles */
+[data-split] > * {
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.motion [data-split],
+.motion [data-reveal],
+.motion [data-reveal-children] > * {
+  visibility: hidden;
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* Nav hides on scroll down, returns on scroll up */
+[data-nav] {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-nav].nav-hidden {
+  transform: translateY(-100%);
+}
+
+/* Faint paper grain over everything */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Floor directory: the row slides right and a thumbnail appears */
+.dir-row .dir-inner,
+.dir-row .dir-thumb {
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.5s ease;
+}
+.dir-row .dir-thumb {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.96);
+}
+.dir-row:hover .dir-inner,
+.dir-row:focus-visible .dir-inner {
+  transform: translateX(1.5rem);
+}
+.dir-row:hover .dir-thumb,
+.dir-row:focus-visible .dir-thumb {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-nav],
+  .dir-row .dir-inner,
+  .dir-row .dir-thumb {
+    transition: none;
+  }
+  .dir-row:hover .dir-inner,
+  .dir-row:focus-visible .dir-inner {
+    transform: none;
   }
 }

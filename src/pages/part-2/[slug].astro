@@ -39,16 +39,16 @@ const galleryClass = {
   <article>
     <!-- HERO -->
     <header class="pt-32">
-      <p class="label">{pad(work.data.number)} / {pad(total)}</p>
-      <h1 class="mt-6 font-display text-6xl leading-[0.95] sm:text-8xl lg:text-9xl">{work.data.title}</h1>
-      {work.data.type && <p class="label mt-6">{work.data.type}</p>}
-      <a href={hero.src} data-lightbox class="mt-12 block">
-        <img src={hero.src} alt={hero.alt} class="max-h-[90svh] w-full object-contain" />
+      <p class="label" data-reveal="fade">{pad(work.data.number)} / {pad(total)}</p>
+      <h1 data-split class="mt-6 font-display text-6xl leading-[0.95] sm:text-8xl lg:text-9xl">{work.data.title}</h1>
+      {work.data.type && <p class="label mt-6" data-reveal="fade">{work.data.type}</p>}
+      <a href={hero.src} data-lightbox data-reveal class="mt-12 block overflow-hidden">
+        <img src={hero.src} alt={hero.alt} data-zoom class="max-h-[90svh] w-full object-contain" />
       </a>
     </header>
 
     <div class="mt-24 grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-      <div><FactCard work={work.data} /></div>
+      <div data-reveal><FactCard work={work.data} /></div>
 
       <div class="space-y-24">
         <div class="prose-body max-w-prose"><Content /></div>
@@ -60,7 +60,7 @@ const galleryClass = {
               <h2 id="process-heading" class="label">( Process )</h2>
               <ol class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {work.data.process.map((step) => (
-                  <li>
+                  <li data-reveal>
                     <a href={step.src} data-lightbox>
                       <img src={step.src} alt={step.alt} loading="lazy" class="aspect-square w-full object-cover" />
                     </a>
@@ -84,7 +84,7 @@ const galleryClass = {
                 aria-label={style === 'carousel' ? 'Scrollable gallery' : undefined}
               >
                 {gallery.map((img) => (
-                  <li>
+                  <li data-reveal>
                     <a href={img.src} data-lightbox class="block">
                       <img src={img.src} alt={img.alt} loading="lazy" decoding="async" class="w-full" />
                     </a>
@@ -115,7 +115,8 @@ const galleryClass = {
           appendix && (
             <a
               href={`/appendices/${appendix.data.number}`}
-              class="block border border-ink p-8 font-display text-3xl hover:bg-ink hover:text-wall sm:text-5xl"
+              data-reveal
+              class="block border border-ink p-8 font-display text-3xl transition-colors duration-500 hover:bg-ink hover:text-wall sm:text-5xl"
             >
               See the process evidence → Appendix {appendix.data.number}
             </a>

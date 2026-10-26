@@ -38,6 +38,8 @@ const part1 = defineCollection({
       ai_disclosure: z.string().optional(),
       note: z.string().optional(),
       room: z.enum(roomIds),
+      highlight: z.boolean().default(false), // shows in the landing hallway
+      document: z.string().optional(), // e.g. a PDF in public/art/part1/
       media: z.array(image).min(1, 'Add at least one image'),
       videos: z.array(video).default([]),
     })

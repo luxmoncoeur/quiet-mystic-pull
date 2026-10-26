@@ -1,5 +1,5 @@
 ---
-// Top nav. TODO (motion step): hide on scroll down, return on scroll up.
+// Top nav. Hides on scroll down and returns on scroll up (scripts/motion.ts).
 import { site, wings } from '../data/site';
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
@@ -7,7 +7,7 @@ const links = wings.filter((w) => w.nav);
 const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
 ---
 
-<header class="fixed inset-x-0 top-0 z-40 bg-wall/95">
+<header data-nav class="fixed inset-x-0 top-0 z-40 bg-wall/90 backdrop-blur-sm">
   <nav aria-label="Main" class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-8">
     <a href="/" class="font-display text-xl leading-tight">{site.title}</a>
 
@@ -74,6 +74,8 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     panel.hidden = !open;
     openButton.setAttribute('aria-expanded', String(open));
     document.body.style.overflow = open ? 'hidden' : '';
+    if (open) document.body.dataset.menuOpen = 'true';
+    else delete document.body.dataset.menuOpen;
     (open ? toggles[1] : openButton).focus();
   };
 

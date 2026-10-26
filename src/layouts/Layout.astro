@@ -23,14 +23,30 @@ const fullTitle = title ? `${title} · ${site.title}` : site.title;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="description" content={description} />
     <title>{fullTitle}</title>
+    <script is:inline>
+      // `js` = scripts run; `motion` = animate (not with reduced motion).
+      // If the motion script never arrives, show everything after 4s.
+      (function () {
+        var html = document.documentElement;
+        html.classList.add('js');
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) html.classList.add('motion');
+        setTimeout(function () {
+          if (!window.__motionReady) html.classList.remove('motion');
+        }, 4000);
+      })();
+    </script>
   </head>
-  <body class="overflow-x-hidden">
+  <body class="overflow-x-clip">
     <Nav />
+    <slot name="hero" />
     <main id="main" class="mx-auto max-w-7xl px-4 pb-32 sm:px-8">
       <slot />
     </main>
     <slot name="after" />
     <PageCounter room={room} />
     <Lightbox />
+    <script>
+      import '../scripts/motion';
+    </script>
   </body>
 </html>

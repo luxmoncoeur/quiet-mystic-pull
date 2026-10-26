@@ -38,4 +38,5 @@ export const wings = [
 export const part1Rooms = [
   { id: 'room-1', name: '(Room name)', note: '(One factual line on why these works sit together.)' },
   { id: 'room-2', name: '(Room name)', note: '(One factual line on why these works sit together.)' },
+  { id: 'room-3', name: '(Room name)', note: '(One factual line on why these works sit together.)' },
 ] as const;

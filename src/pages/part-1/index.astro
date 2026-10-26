@@ -31,10 +31,10 @@ const rooms = part1Rooms
     {
       rooms.map((room, i) => (
         <section class="pt-32" aria-labelledby={`${room.id}-heading`}>
-          <h2 id={`${room.id}-heading`} class="label">
+          <h2 id={`${room.id}-heading`} class="label" data-reveal="fade">
             ( Room {i + 1} · {room.name} )
           </h2>
-          <p class="mt-4 max-w-2xl">{room.note}</p>
+          <p class="mt-4 max-w-2xl" data-reveal>{room.note}</p>
 
           <ol class="mt-16 space-y-32">
             {room.works.map((work) => {
@@ -42,14 +42,14 @@ const rooms = part1Rooms
               const [main] = work.data.media;
               return (
                 <li class="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-end">
-                  <a href={href}>
-                    <img src={main.src} alt={main.alt} loading="lazy" decoding="async" class="w-full" />
+                  <a href={href} data-reveal class="block overflow-hidden">
+                    <img src={main.src} alt={main.alt} loading="lazy" decoding="async" class="w-full transition-transform duration-1000 ease-out motion-safe:hover:scale-[1.02]" />
                   </a>
-                  <div>
+                  <div data-reveal>
                     <p class="font-display text-7xl leading-none text-muted" aria-hidden="true">
                       {pad(work.data.number)}
                     </p>
-                    <MuseumLabel work={work.data} heading="h3" href={href} />
+                    <MuseumLabel work={work.data} heading="h3" href={href} showNumber={false} />
                   </div>
                 </li>
               );
@@ -60,7 +60,7 @@ const rooms = part1Rooms
     }
   </div>
 
-  <a href="/part-2" class="mt-40 block border-y border-ink py-12 text-center font-display text-4xl hover:text-accent sm:text-6xl">
+  <a href="/part-2" data-reveal class="mt-40 block border-y border-ink py-12 text-center font-display text-4xl transition-colors duration-500 hover:bg-ink hover:text-wall sm:text-6xl">
     Continue to Part II →
   </a>
 </Layout>
