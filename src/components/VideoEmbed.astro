@@ -1,13 +1,16 @@
 ---
-// Lazy YouTube or TikTok embed with a visible direct link.
-// Shows a "Video coming soon" box when neither is set.
+// Lazy YouTube or TikTok embed with a visible direct link, or a local video file.
+// Shows a "Video coming soon" box when none is set.
 interface Props {
   title: string;
   youtube?: string; // video ID
   tiktok?: string; // full video URL
+  file?: string; // path inside public/
+  poster?: string; // cover image for `file`
+  credit?: string; // e.g. music used in the video
 }
 
-const { title, youtube, tiktok } = Astro.props;
+const { title, youtube, tiktok, file, poster, credit } = Astro.props;
 
 const tiktokId = tiktok?.match(/\/video\/(\d+)/)?.[1];
 
@@ -30,7 +33,15 @@ const embed = youtube
 
 <figure>
   {
-    embed ? (
+    file ? (
+      <>
+        <video src={file} poster={poster} controls playsinline preload="metadata" class="h-auto w-full bg-surface" />
+        <figcaption class="mt-2">
+          {title}
+          {credit && <span class="label mt-1 block text-muted">{credit}</span>}
+        </figcaption>
+      </>
+    ) : embed ? (
       <>
         {embed.src && (
           <iframe
@@ -47,6 +58,7 @@ const embed = youtube
           <a href={embed.href} target="_blank" rel="noopener noreferrer" class="label underline underline-offset-4">
             Watch on {embed.site} ↗<span class="sr-only"> (opens in a new tab)</span>
           </a>
+          {credit && <span class="label basis-full text-muted">{credit}</span>}
         </figcaption>
       </>
     ) : (
@@ -54,7 +66,10 @@ const embed = youtube
         <div class="flex aspect-video w-full items-center justify-center border border-dashed border-muted bg-surface">
           <p class="label">Video coming soon</p>
         </div>
-        <figcaption class="mt-2">{title}</figcaption>
+        <figcaption class="mt-2">
+          {title}
+          {credit && <span class="label mt-1 block text-muted">{credit}</span>}
+        </figcaption>
       </>
     )
   }

@@ -4,7 +4,6 @@ title: "Life Between *Frames*"
 type: "Photography" # art form
 medium: "Shot on Fujifilm X-A5"
 date: "(date made)"
-time_spent: "(time spent)"
 authorship: Individual
 familiar: false # only ONE Part II work may be true
 gallery_style: contact-sheet # masonry | contact-sheet | carousel | grid

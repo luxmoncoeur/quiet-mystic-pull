@@ -1,5 +1,5 @@
 ---
-number: 4
+number: 2
 title: "When the Shore Went *Silent*"
 type: "Coffee painting"
 medium: "Coffee on Oslo paper"

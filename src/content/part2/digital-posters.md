@@ -3,8 +3,7 @@ number: 1
 title: "From Assignments to *Visual* Identity"
 type: "Digital posters" # art form
 medium: "Canva, Photoshop"
-date: "(date made)"
-time_spent: "(time spent)"
+date: "September 2024 – Present"
 authorship: Individual
 familiar: true # only ONE Part II work may be true
 familiar_reason: "What began as classwork became my visual identity as a designer for FACTS and FSC."

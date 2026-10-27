@@ -1,13 +1,13 @@
 ---
-number: 2
+number: 7
 title: "The Point of False *Certainty*"
 type: "Book spine poetry"
 medium: "Books"
 date: "July 28, 2026"
 authorship: Group
-group: "(Group name): (members)"
+group: "Africa, Aaron Paul; Flores, Mark Zymeth; Gevaña, David Glenn; Laluna, Gian Jacob; Lat, Gio Angelo; Molina, Ma. Guillena; Palmero, Jerom; Pastor, Jon Dominique"
 role: "I helped compile and arrange the books, organizing the materials that shaped the poem's final presentation."
-room: room-1
+room: room-3
 media:
   - src: /art/part1/bookspine-1.webp
     alt: "Book spine poem: a stack of five books whose spines read Decade of Decision, We Led the Way, Having Our Say, Unforeseen Circumstances, Grave Mistake."

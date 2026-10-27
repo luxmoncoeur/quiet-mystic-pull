@@ -1,5 +1,5 @@
 ---
-number: 8
+number: 5
 title: "Mona Lisa: Reimagined in Rococo *Reverie*"
 type: "Painting"
 medium: "Acrylic paint"

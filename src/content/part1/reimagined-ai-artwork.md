@@ -1,11 +1,11 @@
 ---
-number: 7
+number: 4
 title: "Still, I Sink in *You*"
 type: "Reimagined artwork (appropriation)"
 medium: "Gemini, ChatGPT"
 date: "September 22, 2026"
 authorship: Individual
-ai_disclosure: "the image was made with Gemini and ChatGPT"
+ai_disclosure: "the image was generated with Gemini and ChatGPT from my concept."
 room: room-2
 media:
   - src: /art/part1/reimagined-ai-artwork.webp

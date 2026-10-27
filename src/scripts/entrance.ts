@@ -38,8 +38,12 @@ document.querySelectorAll<HTMLAnchorElement>('[data-skip-walkthrough]').forEach(
     const target = document.querySelector<HTMLElement>(link.hash);
     if (!target || !lenis) return;
     e.preventDefault();
-    lenis.scrollTo(target, { immediate: true, offset: -96 });
-  });
+    // Keep Lenis's own #link handling (which adds its offsets and scrolls smoothly)
+    // from running after this.
+    e.stopPropagation();
+    // Land exactly where the hallway ends, so none of it peeks in above the note.
+    lenis.scrollTo(target.getBoundingClientRect().top + window.scrollY, { immediate: true, force: true });
+  }, { capture: true });
 });
 
 // --- Loader ---

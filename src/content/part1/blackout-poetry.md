@@ -1,5 +1,5 @@
 ---
-number: 5
+number: 3
 title: "The Story the *Tides* Remembers"
 type: "Blackout poetry"
 medium: "Newspaper, oil pastel"

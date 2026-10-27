@@ -235,6 +235,13 @@ body::after {
   opacity: 0.05;
 }
 
+/* Heavier film grain on the hallway's last screen */
+.finale-grain {
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 /* Floor directory: the row slides right and a thumbnail appears */
 .dir-row .dir-inner,
 .dir-row .dir-thumb {

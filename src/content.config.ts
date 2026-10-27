@@ -14,11 +14,14 @@ const image = z.object({
   details: z.array(z.string()).optional(),
 });
 
-// Leave youtube/tiktok empty to show a "Video coming soon" box.
+// Leave youtube/tiktok/file empty to show a "Video coming soon" box.
 const video = z.object({
   title: required('Video title'),
   youtube: z.string().optional(), // the ID only, e.g. dQw4w9WgXcQ
   tiktok: z.union([z.url(), z.literal('')]).optional(), // full TikTok video URL
+  file: z.string().optional(), // a video in public/, e.g. /art/part2/crafting/clip.mp4
+  poster: z.string().optional(), // cover image for `file`, shown before it plays
+  credit: z.string().optional(), // e.g. music used in the video
 });
 
 const roomIds = part1Rooms.map((room) => room.id) as [string, ...string[]];

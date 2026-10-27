@@ -52,15 +52,31 @@ const json = JSON.stringify({
     aria-hidden="true"
     class="pointer-events-none invisible absolute inset-0 flex flex-col items-center justify-center px-4 text-center opacity-0"
   >
+    <!-- Texture: a vignette, a halo behind the words, film grain, and a soft fade
+         at the bottom so the hallway melts into the page below. -->
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,color-mix(in_srgb,var(--color-bg)_85%,transparent)_100%)]">
+    </div>
     <div
       class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--color-bg)_0%,color-mix(in_srgb,var(--color-bg)_70%,transparent)_45%,transparent_75%)]"
     >
     </div>
-    <p class="relative max-w-6xl font-display text-6xl leading-[0.92] sm:text-8xl lg:text-[9rem]">
+    <div class="finale-grain absolute inset-0"></div>
+    <div class="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-b from-transparent to-bg"></div>
+
+    <!-- Gallery crop marks in the corners -->
+    <span class="absolute top-24 left-4 size-6 border-t border-l border-ink/60 sm:left-8"></span>
+    <span class="absolute top-24 right-4 size-6 border-t border-r border-ink/60 sm:right-8"></span>
+    <span class="absolute bottom-10 left-4 size-6 border-b border-l border-ink/60 sm:left-8"></span>
+    <span class="absolute right-4 bottom-10 size-6 border-r border-b border-ink/60 sm:right-8"></span>
+
+    <p class="label relative">( End of the hallway )</p>
+    <div class="relative mt-6 h-px w-16 bg-ink/40"></div>
+    <p class="relative mt-8 max-w-6xl font-display text-6xl leading-[0.92] sm:text-8xl lg:text-[9rem]">
       <AccentTitle text={site.title} />
     </p>
     <p class="relative mt-6 font-display text-xl italic sm:text-2xl">{site.subtitle}</p>
     <p class="label relative mt-6">{site.tagline}</p>
+    <p class="label absolute bottom-14 text-muted">Continue ↓</p>
   </div>
 
   <script type="application/json" data-hallway-data set:html={json} />
