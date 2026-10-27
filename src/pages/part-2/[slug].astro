@@ -30,6 +30,10 @@ const style = work.data.gallery_style;
 const link = (w?: typeof work) => w && { href: `/part-2/${w.id}`, label: w.data.title };
 const fileName = (src: string) => src.split('/').pop() ?? src;
 
+// In the collection popups the image speaks for itself: no caption, and only the
+// photography keeps its camera / date / settings line.
+const popupDetails = (details?: string[]) => (style === 'contact-sheet' ? details?.join(' / ') : undefined);
+
 // Scatter the journey windows a little, like files on a desktop: a small tilt and
 // a staggered drop per window (wide screens only). Hover straightens one out.
 const tilts = [-1.6, 1.2, -0.6, 1.8, -1.2, 0.8, -0.4];
@@ -76,7 +80,7 @@ const galleryClass = {
       {work.data.type && <p class="label mt-6" data-reveal="fade">{work.data.type}</p>}
       <div data-reveal class="mt-12">
         <Window title={`featured · ${work.id}`} sticker="featured">
-          <a href={hero.src} data-lightbox data-group={work.id} data-file={`featured · ${work.id}`} class="block overflow-hidden bg-bg">
+          <a href={hero.src} data-lightbox data-group={work.id} data-file={`featured · ${work.id}`} data-no-caption class="block overflow-hidden bg-bg">
             <img src={hero.src} alt={hero.alt} data-zoom class="max-h-[80svh] w-full bg-transparent object-contain" />
           </a>
         </Window>
@@ -142,7 +146,8 @@ const galleryClass = {
                     href={img.src}
                     data-lightbox
                     data-group={work.id}
-                    data-details={img.details?.join(' / ')}
+                    data-details={popupDetails(img.details)}
+                    data-no-caption
                     class="block bg-bg"
                   >
                     <img

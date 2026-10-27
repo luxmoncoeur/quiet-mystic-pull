@@ -19,6 +19,10 @@ function rehypeExternalLinks() {
 
 // https://astro.build/config
 export default defineConfig({
+  // Let ngrok tunnels reach the local server (dev and preview).
+  server: {
+    allowedHosts: ['.ngrok-free.app', '.ngrok-free.dev', '.ngrok.app', '.ngrok.dev'],
+  },
   markdown: {
     processor: unified({ rehypePlugins: [rehypeExternalLinks] }),
   },

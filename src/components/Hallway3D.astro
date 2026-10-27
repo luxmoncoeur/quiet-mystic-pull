@@ -6,6 +6,7 @@
 import type { Frame } from '../scripts/hallway';
 import { site } from '../data/site';
 import { plain } from '../lib/content';
+import AccentTitle from './AccentTitle.astro';
 
 interface Props {
   frames: Frame[];
@@ -31,12 +32,12 @@ const json = JSON.stringify({
       frames.map((f) => (
         <div
           data-hallway-label
-          class="absolute top-0 left-0 w-60 border-t border-ink bg-surface/85 px-3 pt-2 pb-3 opacity-0 backdrop-blur-sm will-change-transform"
+          class="absolute top-0 left-0 w-48 border-t border-ink bg-surface/85 px-3 pt-2 pb-3 sm:w-60 opacity-0 backdrop-blur-sm will-change-transform"
         >
           <p class="label">
             ( {f.number} ) · {f.part}
           </p>
-          <p class="mt-1 font-display text-2xl leading-tight">{plain(f.title)}</p>
+          <p class="mt-1 font-display text-xl leading-tight sm:text-2xl">{plain(f.title)}</p>
           <p class="label mt-1 text-muted">{[f.date, f.medium].filter(Boolean).join(' / ')}</p>
         </div>
       ))
@@ -45,7 +46,22 @@ const json = JSON.stringify({
 
   <slot />
 
-  <div data-hallway-wash aria-hidden="true" class="pointer-events-none absolute inset-0 bg-bg opacity-0"></div>
+  <!-- The end of the walk: the title returns over the hallway, like the opening. -->
+  <div
+    data-hallway-finale
+    aria-hidden="true"
+    class="pointer-events-none invisible absolute inset-0 flex flex-col items-center justify-center px-4 text-center opacity-0"
+  >
+    <div
+      class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--color-bg)_0%,color-mix(in_srgb,var(--color-bg)_70%,transparent)_45%,transparent_75%)]"
+    >
+    </div>
+    <p class="relative max-w-6xl font-display text-6xl leading-[0.92] sm:text-8xl lg:text-[9rem]">
+      <AccentTitle text={site.title} />
+    </p>
+    <p class="relative mt-6 font-display text-xl italic sm:text-2xl">{site.subtitle}</p>
+    <p class="label relative mt-6">{site.tagline}</p>
+  </div>
 
   <script type="application/json" data-hallway-data set:html={json} />
 </section>

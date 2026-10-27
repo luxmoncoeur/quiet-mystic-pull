@@ -11,7 +11,7 @@
   aria-label="Enlarged image"
   class="lightbox m-auto max-h-[94svh] w-[min(64rem,calc(100vw-2rem))] max-w-none overflow-visible bg-transparent p-0 backdrop:bg-(--scrim)"
 >
-  <div class="flex max-h-[94svh] flex-col rounded-md border border-border bg-surface text-ink shadow-2xl">
+  <div class="flex h-[min(92svh,56rem)] flex-col overflow-hidden rounded-md border border-border bg-surface text-ink shadow-2xl">
     <div class="relative flex items-center border-b border-border px-3 py-2">
       <div class="flex items-center gap-1.5">
         <!-- Mac-style close: the red dot is a real button; its × shows on hover or keyboard focus. -->
@@ -40,10 +40,10 @@
     </div>
 
     <figure class="flex min-h-0 flex-1 flex-col">
-      <div class="flex min-h-0 flex-1 items-center justify-center bg-bg p-3 sm:p-5">
-        <img alt="" class="max-h-[68svh] w-auto max-w-full bg-transparent object-contain" />
+      <div class="relative min-h-0 flex-1 bg-bg">
+        <img alt="" class="absolute inset-0 size-full bg-transparent object-contain p-3 sm:p-5" />
       </div>
-      <figcaption class="border-t border-border px-4 py-3">
+      <figcaption class="max-h-36 shrink-0 overflow-y-auto border-t border-border px-4 py-3">
         <p data-lightbox-caption></p>
         <p data-lightbox-details class="label mt-1 text-muted"></p>
       </figcaption>
@@ -76,9 +76,14 @@
     img.src = link.href;
     img.alt = alt;
     file.textContent = link.dataset.file ?? link.pathname.split('/').pop() ?? '';
-    caption.textContent = alt;
+    // `data-no-caption` links show the image without its description (it stays as alt text).
+    const showCaption = !('noCaption' in link.dataset);
+    caption.textContent = showCaption ? alt : '';
+    caption.hidden = !showCaption;
     details.textContent = link.dataset.details ?? '';
     details.hidden = !link.dataset.details;
+    // Nothing to show under the image: drop the caption bar entirely.
+    caption.parentElement!.hidden = !showCaption && !link.dataset.details;
     count.textContent = `${index + 1} / ${items.length}`;
   }
 

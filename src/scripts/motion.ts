@@ -31,6 +31,8 @@ if (lenis) {
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
+  // Phone address bars resize the viewport while scrolling; don't re-lay out pins for that.
+  ScrollTrigger.config({ ignoreMobileResize: true });
 }
 
 // The landing page holds reveals until its loader has finished.

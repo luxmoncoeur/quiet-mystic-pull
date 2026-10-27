@@ -11,7 +11,7 @@ const section = document.querySelector<HTMLElement>('[data-entrance]')!;
 const canvas = section.querySelector<HTMLCanvasElement>('[data-hallway-canvas]')!;
 const labelsWrap = section.querySelector<HTMLElement>('[data-hallway-labels]')!;
 const hero = section.querySelector<HTMLElement>('[data-hero]')!;
-const wash = section.querySelector<HTMLElement>('[data-hallway-wash]')!;
+const finale = section.querySelector<HTMLElement>('[data-hallway-finale]')!;
 const data = JSON.parse(section.querySelector('[data-hallway-data]')!.textContent!) as {
   frames: Frame[];
   title: string;
@@ -28,7 +28,9 @@ function webglAvailable() {
   }
 }
 
-const use3D = motionEnabled && matchMedia('(min-width: 768px)').matches && webglAvailable();
+// Phones get the 3D too (at a lighter quality, see hallway.ts); reduced motion or
+// no WebGL get the flat row.
+const use3D = motionEnabled && webglAvailable();
 
 // "Skip the walkthrough →" jumps straight past the hallway.
 document.querySelectorAll<HTMLAnchorElement>('[data-skip-walkthrough]').forEach((link) => {
@@ -100,7 +102,7 @@ async function start() {
         canvas,
         labels: [...labelsWrap.querySelectorAll<HTMLElement>('[data-hallway-label]')],
         hero,
-        wash,
+        finale,
         ...data,
         onProgress: (fraction) => (target = Math.max(target, fraction)),
       });

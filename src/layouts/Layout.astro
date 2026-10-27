@@ -28,7 +28,8 @@ const fullTitle = plain(title ? `${title} · ${site.title}` : site.title);
     <title>{fullTitle}</title>
     <script is:inline>
       // `js` = scripts run; `motion` = animate (not with reduced motion).
-      // If the motion script never arrives, show everything after 4s.
+      // If the motion script failed to load, show everything once the page has
+      // loaded (slow networks just wait; they don't lose the animations).
       (function () {
         var html = document.documentElement;
         html.classList.add('js');
@@ -39,9 +40,11 @@ const fullTitle = plain(title ? `${title} · ${site.title}` : site.title);
         } catch (e) {}
         html.dataset.mode = html.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         if (!matchMedia('(prefers-reduced-motion: reduce)').matches) html.classList.add('motion');
-        setTimeout(function () {
-          if (!window.__motionReady) html.classList.remove('motion');
-        }, 4000);
+        window.addEventListener('load', function () {
+          setTimeout(function () {
+            if (!window.__motionReady) html.classList.remove('motion');
+          }, 500);
+        });
       })();
     </script>
   </head>
