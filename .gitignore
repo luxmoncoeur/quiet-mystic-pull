@@ -27,3 +27,6 @@ references/
 
 # raw artwork files before conversion (kept out of git)
 assets-raw/
+
+AGENTS.md
+PLAN.md
