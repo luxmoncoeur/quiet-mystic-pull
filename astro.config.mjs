@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
+import react from '@astrojs/react';
 import { unified } from '@astrojs/markdown-remark';
 
 // Markdown links to other sites open in a new tab.
@@ -19,6 +20,8 @@ function rehypeExternalLinks() {
 
 // https://astro.build/config
 export default defineConfig({
+  // React only for the small interactive pieces in src/components/bits (React Bits).
+  integrations: [react()],
   // Let ngrok tunnels reach the local server (dev and preview).
   server: {
     allowedHosts: ['.ngrok-free.app', '.ngrok-free.dev', '.ngrok.app', '.ngrok.dev'],
