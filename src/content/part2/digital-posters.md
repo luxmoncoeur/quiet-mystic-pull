@@ -7,6 +7,7 @@ date: "September 2024 – Present"
 authorship: Individual
 familiar: true # only ONE Part II work may be true
 familiar_reason: "What began as classwork became my visual identity as a designer for FACTS and FSC."
+note: "The logos on these pubmats belong to their organizations (FACTS, FSC, and the college). The designs are my own."
 gallery_style: masonry # masonry | contact-sheet | carousel | grid
 media:
   # The featured piece (your latest pubmat) goes first; it's a placeholder until you add it.
