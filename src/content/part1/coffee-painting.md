@@ -1,11 +1,10 @@
 ---
-number: 2
+number: 4
 title: "When the Shore Went *Silent*"
 type: "Coffee painting"
 medium: "Coffee on Oslo paper"
 date: "August 4, 2026"
 authorship: Individual
-room: room-1
 highlight: true # shows in the landing hallway
 media:
   - src: /art/part1/coffee-painting.webp

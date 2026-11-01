@@ -1,7 +1,6 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { part1Rooms } from './data/site';
 
 const required = (field: string) => z.string().trim().min(1, `${field} is required`);
 
@@ -24,8 +23,6 @@ const video = z.object({
   credit: z.string().optional(), // e.g. music used in the video
 });
 
-const roomIds = part1Rooms.map((room) => room.id) as [string, ...string[]];
-
 const part1 = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/part1' }),
   schema: z
@@ -40,7 +37,6 @@ const part1 = defineCollection({
       role: z.string().optional(),
       ai_disclosure: z.string().optional(),
       note: z.string().optional(),
-      room: z.enum(roomIds),
       highlight: z.boolean().default(false), // shows in the landing hallway
       document: z.string().optional(), // e.g. a PDF in public/art/part1/
       media: z.array(image).min(1, 'Add at least one image'),

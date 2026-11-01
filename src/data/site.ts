@@ -1,4 +1,4 @@
-// Site-wide text: title, intro, footer, and the Part I room list.
+// Site-wide text: title, intro, footer, and the Part I month notes.
 // Edit the "(…)" placeholders here; the pages read everything from this file.
 
 export const site = {
@@ -34,10 +34,42 @@ export const wings = [
   { href: '/appendices', numeral: 'IV', nav: 'Appendices', title: 'Appendices' },
 ] as const;
 
-// Part I is split into curated rooms. Each Part I work sets `room:` to one of
-// these ids, in the order the rooms appear on the wing page.
-export const part1Rooms = [
-  { id: 'room-1', name: 'Still Water, Moving Lines', note: 'Three individual works that use the sea as their subject, in pen, coffee, and newsprint.' },
-  { id: 'room-2', name: 'Draft: A New Brushstroke', note: "Two reinterpretations of famous paintings: Millais's Ophelia and da Vinci's Mona Lisa." },
-  { id: 'room-3', name: 'Draft: Made Together', note: 'Group works, each with my role listed on its label. In this part, it analyzes how coordination can lead to efficient workflow.' },
-] as const;
+// The About page: the passport card and the bento cells around it.
+export const about = {
+  photo: { src: '/about-me/gio.webp', alt: 'Gio Angelo Lat in a brown plaid shirt and glasses, sitting at a dark table in a cafe lit by hanging lanterns.' },
+  surname: 'Lat',
+  givenNames: 'Gio Angelo',
+  program: 'BSIT',
+  passportNo: 'GLT8036-1219',
+  issued: '19 Dec 2025', // December 19, 2025
+  likes: ['choco banana frappe', 'matcha', 'Spotify'],
+  hyperfixations: ['Airbuds', 'squishies'],
+  // Each song opens on Spotify inside my public playlist.
+  songs: {
+    artist: 'NIKI',
+    playlist: '4GU5VUQNQlLFIp3B4HtH7Y',
+    tracks: [
+      { title: 'Magnets', id: '2r08E0h3dkYtdFCV3Ur4uK' },
+      { title: 'Tsunami', id: '7fZ9GpxwteD6R1SNL8OPZa' },
+      { title: 'lowkey', id: '5TTXEcfsYLh6fTarLaevTi' },
+    ],
+  },
+  validFor: 'Until the end of time',
+  foundAt: "If I'm not at home, I'm probably at The Outlets at Lipa, at Motobrew.",
+  links: [
+    { label: 'Medium', handle: '@luxmoncoeur', url: 'https://medium.com/@luxmoncoeur' },
+    { label: 'GitHub', handle: 'luxmoncoeur', url: 'https://github.com/luxmoncoeur' },
+  ],
+};
+
+// Pages outside the museum's five rooms: in the nav, but not in the page counter.
+export const extraPages = [{ href: '/about', numeral: '', nav: 'About', title: 'About *me*' }] as const;
+
+// Part I hangs in the order the works were made, one room per month. Its notes
+// are keyed by month name; a month without a note just shows its name.
+export const part1Months: Record<string, string> = {
+  July: 'The first weeks: a scribble that turned into a sea, and two book spine poems built with my groupmates.',
+  August: 'Coffee as paint, and the shore again.',
+  September: 'Newsprint, an appropriated painting, and a group analysis of Balota.',
+  October: 'A Rococo Mona Lisa, and a short film made with friends.',
+};

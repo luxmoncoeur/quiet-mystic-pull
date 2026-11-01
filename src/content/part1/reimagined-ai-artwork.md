@@ -1,12 +1,11 @@
 ---
-number: 4
+number: 6
 title: "Still, I Sink in *You*"
 type: "Reimagined artwork (appropriation)"
 medium: "Gemini, ChatGPT"
 date: "September 22, 2026"
 authorship: Individual
 ai_disclosure: "the image was generated with Gemini and ChatGPT from my concept."
-room: room-2
 media:
   - src: /art/part1/reimagined-ai-artwork.webp
     alt: "A reimagining of Millais's Ophelia: the artist, in dark Victorian clothing, floats face-up in a stream surrounded by dense green plants and white flowers."

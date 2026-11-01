@@ -1,11 +1,10 @@
 ---
-number: 3
+number: 5
 title: "The Story the *Tides* Remembers"
 type: "Blackout poetry"
 medium: "Newspaper, oil pastel"
 date: "September 1, 2026"
 authorship: Individual
-room: room-1
 highlight: true # shows in the landing hallway
 media:
   - src: /art/part1/blackout-poetry.webp

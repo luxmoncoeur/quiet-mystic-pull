@@ -8,7 +8,6 @@ authorship: Group
 group: "Balazon, Kirk Jedrik; De Leon, Jelyn Mae; Landicho, John Harvey; Lat, Gio Angelo L.; Salazar, Catherine Joy"
 role: "I helped conceptualize the video, generated the music, helped prepare the filming environment, and organized the cast."
 ai_disclosure: "the background music was generated with Suno."
-room: room-3
 media:
   - src: /art/part1/video-multimedia.webp
     alt: "Still from the film: four students in navy school uniforms sit side by side on a red bench in an open field, smiling as they play on their phones held sideways."

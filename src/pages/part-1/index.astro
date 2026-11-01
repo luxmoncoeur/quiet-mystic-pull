@@ -7,16 +7,22 @@ import SectionHeader from '../../components/SectionHeader.astro';
 import SkipLink from '../../components/SkipLink.astro';
 import Marquee from '../../components/Marquee.astro';
 import MuseumLabel from '../../components/MuseumLabel.astro';
-import { part1Rooms, wings } from '../../data/site';
+import Doodle from '../../components/Doodle.astro';
+import { part1Months, wings } from '../../data/site';
 import { getPart1, pad } from '../../lib/content';
 
 const works = await getPart1();
 const wing = wings[1];
 const activityTypes = [...new Set(works.map((w) => w.data.type).filter((t): t is string => Boolean(t)))];
 
-const rooms = part1Rooms
-  .map((room) => ({ ...room, works: works.filter((w) => w.data.room === room.id) }))
-  .filter((room) => room.works.length > 0);
+// Works are numbered in the order they were made; each month becomes a room.
+const monthOf = (date?: string) => date?.match(/[A-Z][a-z]+/)?.[0] ?? 'Undated';
+const rooms = [...new Set(works.map((w) => monthOf(w.data.date)))].map((name) => ({
+  id: `room-${name.toLowerCase()}`,
+  name,
+  note: part1Months[name],
+  works: works.filter((w) => monthOf(w.data.date) === name),
+}));
 
 // Vary the hang like a real wall, without leaving empty wall: the image column is
 // only as wide as the image, and the label + caption fill the rest of the row.
@@ -56,7 +62,7 @@ const shapes = Object.fromEntries(
   <SectionHeader
     numeral={wing.numeral}
     title={wing.title}
-    line="All outputs from GEARTS, individual and group, in the order I've curated them."
+    line="All outputs from GEARTS, individual and group, in the order I made them."
   >
     <div class="mt-8"><SkipLink href="#rooms" label="Skip animation →" /></div>
   </SectionHeader>
@@ -67,10 +73,14 @@ const shapes = Object.fromEntries(
     {
       rooms.map((room, i) => (
         <section class="pt-24" aria-labelledby={`${room.id}-heading`}>
-          <h2 id={`${room.id}-heading`} class="label" data-reveal="fade">
-            ( Room {i + 1} · {room.name} )
-          </h2>
-          <p class="mt-4 max-w-2xl" data-reveal>{room.note}</p>
+          <div class="flex flex-wrap items-end gap-x-6 gap-y-2">
+            <h2 id={`${room.id}-heading`} data-split class="font-display text-[clamp(3.5rem,13vw,9rem)] leading-none italic">
+              {room.name}
+            </h2>
+            <p class="label pb-[0.6em] text-muted" data-reveal="fade">( Room {i + 1} · 2026 )</p>
+          </div>
+          <Doodle shape="wave" class="mt-3 w-44 text-accent sm:w-56" />
+          {room.note && <p class="mt-6 max-w-2xl" data-reveal>{room.note}</p>}
 
           <ol class="mt-12 space-y-20 lg:space-y-24">
             {room.works.map((work) => {

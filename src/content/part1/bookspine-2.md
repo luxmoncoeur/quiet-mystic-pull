@@ -1,5 +1,5 @@
 ---
-number: 6
+number: 3
 title: "When the Night Finally *Answered*"
 type: "Book spine poetry"
 medium: "Books"
@@ -7,7 +7,6 @@ date: "July 28, 2026"
 authorship: Group
 group: "Africa, Aaron Paul; Flores, Mark Zymeth; Gevaña, David Glenn; Laluna, Gian Jacob; Lat, Gio Angelo; Molina, Ma. Guillena; Palmero, Jerom; Pastor, Jon Dominique"
 role: "I helped compile and arrange the books, organizing the materials that shaped the poem's final presentation."
-room: room-3
 highlight: true # shows in the landing hallway
 media:
   - src: /art/part1/bookspine-2.webp

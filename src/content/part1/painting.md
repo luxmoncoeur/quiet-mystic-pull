@@ -1,11 +1,10 @@
 ---
-number: 5
+number: 8
 title: "Mona Lisa: Reimagined in Rococo *Reverie*"
 type: "Painting"
 medium: "Acrylic paint"
 date: "October 6, 2026"
 authorship: Individual
-room: room-2
 highlight: true # shows in the landing hallway
 media:
   - src: /art/part1/painting.webp
