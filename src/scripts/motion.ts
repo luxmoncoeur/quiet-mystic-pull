@@ -54,6 +54,7 @@ function titleReveals() {
   document.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {
     SplitText.create(el, {
       type: 'words',
+      wordsClass: 'split-word', // masks get `split-word-mask` (see global.css)
       mask: 'words',
       autoSplit: true,
       onSplit(self) {
@@ -101,6 +102,18 @@ function fadeReveals() {
   });
 }
 
+// Hand-drawn doodles (components/Doodle.astro) draw their stroke in once.
+function drawDoodles() {
+  document.querySelectorAll<SVGPathElement>('[data-draw]').forEach((path) => {
+    const length = path.getTotalLength();
+    gsap.fromTo(
+      path,
+      { strokeDasharray: length, strokeDashoffset: length },
+      { strokeDashoffset: 0, duration: 1.6, ease: 'power2.inOut', ...onEnter(path) },
+    );
+  });
+}
+
 function marquees() {
   document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((el) => {
     const track = el.querySelector<HTMLElement>('[data-marquee-track]');
@@ -142,6 +155,7 @@ if (motionEnabled) {
   afterLoader.then(() => {
     titleReveals();
     fadeReveals();
+    drawDoodles();
     marquees();
     stackingCards();
     ScrollTrigger.refresh();

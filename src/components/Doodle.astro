@@ -1,0 +1,30 @@
+---
+// Small hand-drawn marks in the margins: a wave (the water thread in Part I), a
+// sparkle, a heart, and a loose underline. Purely decorative. With motion on,
+// the stroke draws itself in when scrolled to (scripts/motion.ts, `data-draw`).
+interface Props {
+  shape: 'wave' | 'sparkle' | 'heart' | 'underline';
+  class?: string;
+}
+
+const { shape, class: className } = Astro.props;
+
+const shapes = {
+  wave: { box: '0 0 240 24', d: 'M2 14c18-14 30-14 44 0s28 14 44 0 30-14 44 0 28 14 44 0 30-14 44 0 16 8 16 8' },
+  sparkle: { box: '0 0 40 40', d: 'M20 3c1.5 9 4 13.5 17 17-13 3.5-15.5 8-17 17-1.5-9-4-13.5-17-17 13-3.5 15.5-8 17-17Z' },
+  heart: { box: '0 0 40 36', d: 'M20 33C8 25 3 18 3 11.5 3 6.5 7 3 11.5 3 15 3 18 5 20 8.5 22 5 25 3 28.5 3 33 3 37 6.5 37 11.5 37 18 32 25 20 33Z' },
+  underline: { box: '0 0 200 16', d: 'M3 11c40-6 90-9 150-7 14 .5 28 1.5 44 3' },
+};
+const { box, d } = shapes[shape];
+---
+
+<svg viewBox={box} class:list={['doodle pointer-events-none', className]} fill="none" aria-hidden="true">
+  <path
+    d={d}
+    data-draw
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

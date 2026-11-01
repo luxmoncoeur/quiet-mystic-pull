@@ -140,15 +140,34 @@
     padding: 0.2rem 0.55rem;
   }
 
-  /* Folder stickers in the appendices: the secondary blue, as a small touch */
+  /* Folder stickers in the appendices: the secondary blue, die-cut like a real
+     sticker (a paper-white edge and a small lift shadow) */
   .sticker {
     display: inline-block;
     background-color: var(--color-secondary-soft);
     color: var(--color-secondary-soft-text);
     font-family: var(--font-mono);
     font-size: 0.8rem;
-    line-height: 1.4;
-    padding: 0.2rem 0.55rem;
+    line-height: 1.35;
+    padding: 0.3rem 0.75rem;
+    border-radius: 0.9rem;
+    box-shadow:
+      0 0 0 3px var(--color-surface),
+      0 6px 14px -6px var(--shadow);
+  }
+
+  /* Wing and work titles: scale with the screen so long words fit on phones */
+  .display-xl,
+  .display-lg {
+    line-height: 0.98;
+    overflow-wrap: break-word;
+    text-wrap: balance;
+  }
+  .display-xl {
+    font-size: clamp(2.6rem, 10.5vw, 8rem);
+  }
+  .display-lg {
+    font-size: clamp(2.4rem, 8.5vw, 6rem);
   }
 
   .prose-body > * + * {
@@ -171,10 +190,12 @@
    hidden for anyone else.
    ------------------------------------------------------------------ */
 
-/* Room for descenders inside the word masks of split titles */
-[data-split] > * {
-  padding-bottom: 0.14em;
-  margin-bottom: -0.14em;
+/* Room inside the word masks of split titles, so descenders (g, y, J) and
+   overhanging serifs aren't cut off. Every mask gets it, including the accent
+   word's, which sits inside a <span> rather than directly in the heading. */
+.split-word-mask {
+  padding: 0.08em 0.14em 0.26em;
+  margin: -0.08em -0.14em -0.26em;
 }
 
 .motion [data-split],

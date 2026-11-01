@@ -76,7 +76,7 @@ const galleryClass = {
       </a>
       <div class="mt-8"></div>
       <p class="label" data-reveal="fade">{pad(work.data.number)} / {pad(total)}</p>
-      <h1 data-split class="mt-6 font-display text-6xl leading-[0.95] sm:text-8xl lg:text-9xl"><AccentTitle text={work.data.title} /></h1>
+      <h1 data-split class="mt-6 display-xl font-display"><AccentTitle text={work.data.title} /></h1>
       {work.data.type && <p class="label mt-6" data-reveal="fade">{work.data.type}</p>}
       <div data-reveal class="mt-12">
         <Window title={`featured · ${work.id}`} sticker="featured">
