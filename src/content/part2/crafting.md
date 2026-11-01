@@ -10,22 +10,10 @@ gallery_style: carousel # masonry | contact-sheet | carousel | grid
 media:
   - src: /art/part2/crafting/hero.webp
     alt: "A handmade bouquet of blue lilies shaped from fuzzy wire, in light and deep blue with white-edged petals, white stamens, and green leaves, with a tall blue flower spike behind."
-process:
-  - src: /art/part2/crafting/process-1.webp
-    alt: "(describe this stage)"
-    date: "(date)"
-    caption: "(one-line factual caption)"
-  - src: /art/part2/crafting/process-2.webp
-    alt: "(describe this stage)"
-    date: "(date)"
-    caption: "(one-line factual caption)"
-  - src: /art/part2/crafting/process-3.webp
-    alt: "(describe this stage)"
-    date: "(date)"
-    caption: "(one-line factual caption)"
+# No process photos: the whole making was filmed, so the video below is the process.
 videos:
   - title: "Making the bouquet"
-    youtube: "" # YouTube video ID, to follow
+    youtube: "B82UcACOUcI"
   - title: "Paper rings"
     file: /art/part2/crafting/Paper-Rings.mp4
     poster: /art/part2/crafting/paper-rings-poster.webp
