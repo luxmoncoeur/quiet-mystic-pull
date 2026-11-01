@@ -11,25 +11,33 @@ const wing = wings[4];
 <Layout title={wing.title} room={5}>
   <SectionHeader numeral={wing.numeral} title={wing.title} line="Process evidence for each Part II work, in the same order." />
 
-  <ul class="grid grid-cols-2 gap-x-6 gap-y-16 sm:grid-cols-4">
+  <ul class="grid max-w-5xl grid-cols-1 gap-x-10 gap-y-16 min-[420px]:grid-cols-2 lg:grid-cols-3">
     {
-      appendices.map((a) => (
+      appendices.map((a, i) => (
         <li data-reveal>
           <a href={`/appendices/${a.data.number}`} class="group relative block">
-            <svg viewBox="0 0 120 96" class="w-full text-ink" aria-hidden="true">
+            <svg viewBox="0 0 120 96" class="w-full overflow-visible text-ink" aria-hidden="true">
+              <!-- a sheet of paper that slides up out of the folder on hover -->
+              <rect x="58" y="11" width="50" height="40" rx="2" class="fill-surface stroke-muted transition-transform duration-500 ease-out group-hover:-translate-y-3 group-focus-visible:-translate-y-3" stroke-width="1.5" vector-effect="non-scaling-stroke" />
               <path
                 d="M4 14a6 6 0 0 1 6-6h32l10 10h58a6 6 0 0 1 6 6v62a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6Z"
-                fill="none"
+                fill="var(--bg)"
                 stroke="currentColor"
                 stroke-width="2"
-                class="group-hover:fill-surface"
+                vector-effect="non-scaling-stroke"
+                class="transition-colors group-hover:fill-surface"
               />
             </svg>
             {a.data.sticker && (
-              <span class="sticker absolute top-1/3 right-2 -rotate-6">{a.data.sticker}</span>
+              <span
+                class="sticker absolute top-[42%] left-1/2 w-max max-w-[85%] -translate-x-1/2 rotate-(--tilt) text-center transition-transform duration-300 group-hover:rotate-0"
+                style={`--tilt: ${[-6, 4, -3][i % 3]}deg`}
+              >
+                {a.data.sticker}
+              </span>
             )}
             <span class="label mt-3 block transition-colors group-hover:text-accent">
-              appendix_{pad(a.data.number)}/ {a.data.folder}
+              {pad(a.data.number)}/ {a.data.folder}
             </span>
           </a>
         </li>
