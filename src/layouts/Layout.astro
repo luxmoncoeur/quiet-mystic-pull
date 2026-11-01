@@ -10,7 +10,7 @@ import { plain } from '../lib/content';
 interface Props {
   title?: string; // page title; the site title is added after it
   description?: string;
-  room: number; // which of the five rooms, for the page counter
+  room?: number; // which of the five rooms, for the page counter (none: no counter)
 }
 
 const { title, description = site.description, room } = Astro.props;
@@ -56,7 +56,7 @@ const fullTitle = plain(title ? `${title} · ${site.title}` : site.title);
     </main>
     <slot name="after" />
     <BackButton />
-    <PageCounter room={room} />
+    {room && <PageCounter room={room} />}
     <Lightbox />
     <script>
       import '../scripts/motion';

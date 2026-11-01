@@ -1,0 +1,1080 @@
+---
+// About me: a passport you can tilt, flip to its visa page, and stamp (pick a
+// stamp, then click anywhere on the page), with bento cells around it for likes,
+// songs, hyperfixations, and links.
+import Layout from '../layouts/Layout.astro';
+import AccentTitle from '../components/AccentTitle.astro';
+import Doodle from '../components/Doodle.astro';
+import ClickSpark from '../components/bits/ClickSpark';
+import CircularText from '../components/bits/CircularText';
+import BounceCards from '../components/bits/BounceCards';
+import ShinyText from '../components/bits/ShinyText';
+import { about, extraPages, site } from '../data/site';
+import { stickerArt } from '../data/stickers';
+
+const page = extraPages[0];
+const section = site.footer.section.replace(about.program, '').trim(); // "3A"
+
+// Machine-readable zone at the foot of the passport, padded with < like the real thing.
+const mrz = (text: string) => text.toUpperCase().replace(/[^A-Z0-9<]+/g, '<').padEnd(44, '<').slice(0, 44);
+const mrzLines = [
+  mrz(`P<GRT${about.surname}<<${about.givenNames}`),
+  mrz(`${about.passportNo.replace('-', '')}<${about.program}${section}<<GEARTS<<CHOCO<BANANA`),
+];
+
+// The stamps you can pick from, all in ink: text stamps with details (never a
+// date), then round stamps with a drawing in the middle. Keep the order: saved
+// stamps refer to kinds by index.
+type StampKind = { top?: string; main: string; bottom?: string; shape: string; tone?: string; icon?: string };
+const inner = (svg: string) => svg.replace(/^<svg[^>]*>|<\/svg>$/g, ''); // art without its <svg> wrapper
+const stampKinds: StampKind[] = [
+  { top: 'Admitted', main: 'GEARTS', bottom: 'Art Appreciation', shape: 'circle', tone: 'accent' },
+  { top: 'Visa', main: 'Approved', bottom: about.program, shape: 'rect', tone: 'navy' },
+  { top: 'Halloween', main: 'Boo!', bottom: 'Trick or treat', shape: 'circle', tone: 'accent' },
+  { top: 'Refuelled', main: 'Choco Banana', bottom: 'Frappe', shape: 'oval', tone: 'navy' },
+  { top: 'Now playing', main: 'Tsunami', bottom: about.songs.artist, shape: 'rect', tone: 'accent' },
+  { top: 'Certified', main: 'Matcha', bottom: 'Lover', shape: 'oval', tone: 'navy' },
+  { top: 'Synced on', main: 'Airbuds', bottom: 'Listening now', shape: 'rect', tone: 'navy' },
+  { top: 'Certified', main: 'Squishy', bottom: 'Extra soft', shape: 'circle', tone: 'accent' },
+  { top: 'Certified', main: 'Matcha', bottom: 'Matcha lover', shape: 'circle', tone: 'navy', icon: inner(stickerArt.matcha) },
+  { top: 'Refuelled', main: 'Choco banana frappe', bottom: 'Choco banana frappe', shape: 'circle', tone: 'accent', icon: inner(stickerArt.frappe) },
+  { top: 'Happy', main: 'Halloween', bottom: 'Halloween', shape: 'circle', tone: 'accent', icon: inner(stickerArt.pumpkin) },
+  { top: 'Now playing', main: 'Tsunami', bottom: 'Tsunami · NIKI', shape: 'circle', tone: 'navy', icon: inner(stickerArt.wave) },
+  { top: 'Now playing', main: 'Magnets', bottom: 'Magnets · NIKI', shape: 'circle', tone: 'accent', icon: inner(stickerArt.magnet) },
+  { top: 'Now playing', main: 'lowkey', bottom: 'lowkey · NIKI', shape: 'circle', tone: 'navy', icon: inner(stickerArt.eyes) },
+  { top: 'Made with', main: 'Hearts', bottom: 'Love', shape: 'circle', tone: 'accent', icon: inner(stickerArt.hearts) },
+];
+const trackUrl = (id: string) =>
+  `https://open.spotify.com/track/${id}?context=${encodeURIComponent(`spotify:playlist:${about.songs.playlist}`)}`;
+
+const made = [
+  { src: '/art/part1/scribble-art.webp', alt: 'Scribble art of a deep sea in pen and blue oil pastel' },
+  { src: '/art/part1/coffee-painting.webp', alt: 'Coffee painting of a quiet shoreline' },
+  { src: '/art/part2/crafting/hero.webp', alt: 'Bouquet of blue fuzzy-wire lilies' },
+  { src: '/art/part1/painting.webp', alt: 'Mona Lisa reimagined in pastel pink and violet' },
+  { src: '/art/part2/photography/hero.webp', alt: 'Star-shaped frames over a stepping-stone path at sunset' },
+];
+---
+
+<Layout title="About me" description="About Gio Angelo Lat, the person behind this GEARTS portfolio.">
+  <header class="pt-36 pb-12 sm:pt-44">
+    <h1 data-split class="display-xl font-display"><AccentTitle text={page.title} /></h1>
+    <p class="mt-8 max-w-2xl" data-reveal>
+      The person behind the portfolio, as a passport. Pick a stamp and click anywhere on a page to stamp
+      it, or flip it over to the visa page. Your stamps stay on this device.
+    </p>
+  </header>
+
+  <div class="bento grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <!-- PASSPORT -->
+    <section aria-labelledby="passport-heading" class="sm:col-span-2 lg:col-span-3" data-reveal>
+      <h2 id="passport-heading" class="sr-only">Passport</h2>
+      <ClickSpark client:visible sparkColor={['#d4776f', '#8da8c1', '#e9b44c']} shape="star" sparkCount={9} sparkSize={12} sparkRadius={34} style={{ height: '100%' }}>
+        <div class="passport-scene" data-passport-scene data-kinds={JSON.stringify(stampKinds)}>
+          <div class="passport-book" data-passport-book>
+            <!-- FRONT: the data page -->
+            <div class="passport passport-front" data-face="front">
+              <div class="passport-top">
+                <p class="passport-kicker">
+                  <ShinyText client:visible text="Pasaporte · Passport" color="#1a2e49" shineColor="#8da8c1" speed={3} />
+                </p>
+                <p class="passport-kicker hidden sm:block">Philippines</p>
+              </div>
+
+              <div class="passport-body">
+                <div class="passport-photo">
+                  <img src={about.photo.src} alt={about.photo.alt} width="1000" height="1333" />
+                  <span class="passport-holo" aria-hidden="true"></span>
+                </div>
+
+                <dl class="passport-fields">
+                  <div><dt>Type / Uri</dt><dd>P</dd></div>
+                  <div><dt>Code</dt><dd>GRT</dd></div>
+                  <div><dt>Passport no.</dt><dd>{about.passportNo}</dd></div>
+                  <div class="col-span-full"><dt>Surname / Apelyido</dt><dd class="passport-name">{about.surname}</dd></div>
+                  <div class="col-span-full"><dt>Given names / Pangalan</dt><dd class="passport-name">{about.givenNames}</dd></div>
+                  <div><dt>Program</dt><dd>{about.program}</dd></div>
+                  <div><dt>Section</dt><dd>{section}</dd></div>
+                  <div><dt>Course</dt><dd>GEARTS</dd></div>
+                  <div><dt>Date of issue</dt><dd>{about.issued}</dd></div>
+                  <div class="col-span-2"><dt>Signature</dt><dd class="passport-signature">Gio Angelo</dd></div>
+                </dl>
+              </div>
+
+              <!-- A faint second copy of the photo, like the ghost image on a real passport -->
+              <img src={about.photo.src} alt="" class="passport-ghost" aria-hidden="true" />
+
+              <div class="passport-mrz" aria-hidden="true">
+                {mrzLines.map((line) => <p>{line}</p>)}
+              </div>
+
+              <span class="passport-sheen" aria-hidden="true"></span>
+              <div class="stamps" data-stamps="front" aria-hidden="true"></div>
+            </div>
+
+            <!-- BACK: a visa page with a few more details -->
+            <div class="passport passport-back" data-face="back">
+              <div class="passport-top">
+                <p class="passport-kicker">Mga Visa · Visas</p>
+                <p class="passport-kicker">Page 02</p>
+              </div>
+              <p class="passport-watermark" aria-hidden="true">GEARTS</p>
+              <dl class="passport-endorsements">
+                <div><dt>Valid until</dt><dd>{about.validFor}</dd></div>
+                <div><dt>Runs on</dt><dd>{about.likes.slice(0, 2).join(' & ')}</dd></div>
+                <div><dt>Soundtrack</dt><dd>{about.songs.artist} on {about.likes[2]}</dd></div>
+                <div><dt>Hyperfixations</dt><dd>{about.hyperfixations.join(', ')}</dd></div>
+                <div><dt>Found at</dt><dd>{about.foundAt}</dd></div>
+              </dl>
+              <p class="passport-kicker passport-back-note">This page is for stamps. Pick one, then click anywhere.</p>
+              <span class="passport-sheen" aria-hidden="true"></span>
+              <div class="stamps" data-stamps="back" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </ClickSpark>
+
+    </section>
+
+    <!-- STAMP KIT: count, picker, actions -->
+    <section class="cell flex flex-col gap-4" aria-labelledby="kit-heading" data-reveal>
+      <div class="flex items-baseline justify-between gap-3">
+        <h2 id="kit-heading" class="label text-muted">Stamps collected</h2>
+        <p class="font-display text-5xl leading-none" data-stamp-count>0</p>
+      </div>
+      <div class="grid grid-cols-4 gap-1.5" role="group" aria-label="Choose a stamp">
+        <button type="button" class="tile" data-pick="-1" aria-pressed="true" title="Surprise me">
+          <span class="tile-ink">?</span><span class="sr-only">Surprise me</span>
+        </button>
+        {
+          stampKinds.map((k, i) => (
+            <button type="button" class="tile" data-pick={i} aria-pressed="false" title={k.main}>
+              {k.icon ? (
+                <span class:list={['tile-art', `tile-${k.tone}`]}>
+                  <svg viewBox="0 0 64 64" class="ink-art" set:html={k.icon} />
+                </span>
+              ) : (
+                <span class:list={['tile-ink', `tile-${k.shape}`, `tile-${k.tone}`]}>{k.main.slice(0, 3)}</span>
+              )}
+              <span class="sr-only">{k.main}</span>
+            </button>
+          ))
+        }
+      </div>
+      <div class="mt-auto flex flex-wrap gap-2">
+        <button type="button" class="chip hover:border-accent hover:text-accent" data-flip aria-pressed="false">Flip ↻</button>
+        <button type="button" class="chip hover:border-accent hover:text-accent" data-stamp-add>Stamp it</button>
+        <button type="button" class="chip hover:border-accent hover:text-accent" data-stamp-clear>Clear</button>
+      </div>
+      <p class="sr-only" aria-live="polite" data-stamp-status></p>
+    </section>
+
+    <!-- LIKES -->
+    <section class="cell flex flex-col" aria-labelledby="likes-heading" data-reveal>
+      <h2 id="likes-heading" class="label text-muted">Likes</h2>
+      <ul class="mt-3 flex flex-1 flex-col justify-around divide-y divide-border">
+        {
+          [stickerArt.frappe, stickerArt.matcha, null].map((art, i) => (
+            <li class="flex items-center gap-3 py-2.5">
+              {art ? (
+                <span class="like-art" set:html={art} aria-hidden="true" />
+              ) : (
+                <span class="like-art like-spotify" aria-hidden="true">
+                  <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#1ed760" /><path d="M18 25q15-5 29 2M20 33q12-4 23 2M22 41q9-3 17 1.5" fill="none" stroke="#0b1f12" stroke-width="4" stroke-linecap="round" /></svg>
+                </span>
+              )}
+              <span class="font-display text-2xl leading-tight">{about.likes[i]}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- ON REPEAT: each song opens on Spotify in my playlist -->
+    <section class="cell flex flex-col sm:col-span-2" aria-labelledby="songs-heading" data-reveal>
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 id="songs-heading" class="label text-muted">Always on repeat · {about.songs.artist}</h2>
+        <a
+          href={`https://open.spotify.com/playlist/${about.songs.playlist}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="label text-muted underline-offset-4 hover:text-accent hover:underline"
+        >
+          Full playlist ↗<span class="sr-only"> (opens Spotify in a new tab)</span>
+        </a>
+      </div>
+      <ol class="mt-3 flex flex-1 flex-col justify-around divide-y divide-border">
+        {
+          about.songs.tracks.map((track, i) => (
+            <li>
+              <a
+                href={trackUrl(track.id)}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="song group flex items-center gap-4 py-3"
+              >
+                <span class="label w-5 text-muted">{i + 1}</span>
+                <span class="flex-1 font-display text-4xl leading-tight transition-colors group-hover:text-accent">{track.title}</span>
+                {i === 0 && (
+                  <span class="eq group-hover:hidden" role="img" aria-label="playing now">
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                )}
+                <span class="play" aria-hidden="true">▶</span>
+                <span class="sr-only">Play {track.title} on Spotify (opens in a new tab)</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- HYPERFIXATIONS: squishy toys. Hold to squash, let go to wobble. -->
+    <section class="cell flex flex-col" aria-labelledby="fix-heading" data-reveal>
+      <h2 id="fix-heading" class="label text-muted">Hyperfixations</h2>
+      <ul class="mt-4 grid flex-1 grid-cols-2 place-items-center gap-3">
+        {
+          about.hyperfixations.map((thing, i) => (
+            <li class="flex w-full flex-col items-center gap-3">
+              <button type="button" class:list={['squish', i % 2 ? 'squish-pink' : 'squish-blue']} data-squish aria-label={`Squish ${thing}`}>
+                <span class="squish-face" aria-hidden="true">
+                  <i class="squish-eye" />
+                  <i class="squish-eye" />
+                  <i class="squish-mouth" />
+                  <i class="squish-blush" />
+                  <i class="squish-blush" />
+                </span>
+              </button>
+              <span class="font-display text-2xl leading-none">{thing}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="label mt-4 text-muted"><span data-squish-count>0</span> squishes · press and hold</p>
+    </section>
+
+    <!-- THINGS I MADE -->
+    <section class="cell overflow-hidden sm:col-span-2" aria-labelledby="made-heading" data-reveal>
+      <h2 id="made-heading" class="label text-muted">A few things I made · hover to fan them out</h2>
+      <div class="made-stage mt-2 flex justify-center">
+        <BounceCards
+          client:visible
+          images={made}
+          containerWidth={600}
+          containerHeight={300}
+          cardSize={190}
+          spread={98}
+          rotation={7}
+          pushDistance={90}
+          borderWidth={5}
+          borderColor="#f6f7f8"
+          radius={16}
+        />
+      </div>
+    </section>
+
+    <!-- BADGE -->
+    <div class="cell grid place-items-center" data-reveal>
+      <CircularText
+        client:visible
+        text="GEARTS * ART APPRECIATION * BSIT * "
+        spinDuration={22}
+        onHover="speedUp"
+        size={190}
+        fontSize={14}
+        fontWeight={500}
+        className="font-mono text-ink"
+      >
+        <Doodle shape="heart" class="w-11 text-accent" />
+      </CircularText>
+    </div>
+
+    <!-- ELSEWHERE -->
+    <section class="cell flex flex-col" aria-labelledby="links-heading" data-reveal>
+      <h2 id="links-heading" class="label text-muted">Elsewhere</h2>
+      <ul class="mt-4 flex flex-1 flex-col justify-around gap-4">
+        {
+          [...about.links, { label: 'Spotify', handle: 'on repeat', url: `https://open.spotify.com/playlist/${about.songs.playlist}` }].map((l) => (
+            <li>
+              <a
+                href={l.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group block border-b border-ink pb-2 transition-colors hover:border-accent hover:text-accent"
+              >
+                <span class="block font-display text-4xl leading-tight">{l.label} ↗</span>
+                <span class="label text-muted group-hover:text-accent">
+                  {l.handle}<span class="sr-only"> (opens in a new tab)</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+</Layout>
+
+<script>
+  // The passport: tilts toward the pointer, flips to its visa page, and takes
+  // stamps on either side. Stamps are kept in localStorage for this device.
+  type Kind = { top?: string; main: string; bottom?: string; shape: string; tone?: string; icon?: string };
+  type Stamp = { x: number; y: number; r: number; k: number; side?: 'front' | 'back' };
+  const KEY = 'passport-stamps';
+  const MAX = 40;
+
+  const scene = document.querySelector<HTMLElement>('[data-passport-scene]')!;
+  const book = document.querySelector<HTMLElement>('[data-passport-book]')!;
+  const kinds: Kind[] = JSON.parse(scene.dataset.kinds ?? '[]');
+  const layers = {
+    front: document.querySelector<HTMLElement>('[data-stamps="front"]')!,
+    back: document.querySelector<HTMLElement>('[data-stamps="back"]')!,
+  };
+  const count = document.querySelector<HTMLElement>('[data-stamp-count]')!;
+  const status = document.querySelector<HTMLElement>('[data-stamp-status]')!;
+  const flipButton = document.querySelector<HTMLButtonElement>('[data-flip]')!;
+  const pickers = document.querySelectorAll<HTMLButtonElement>('[data-pick]');
+  const motion = document.documentElement.classList.contains('motion');
+
+  let picked = -1; // -1 = surprise: a random kind each time
+  let side: 'front' | 'back' = 'front';
+  let stamps: Stamp[] = [];
+  try {
+    stamps = JSON.parse(localStorage.getItem(KEY) ?? '[]');
+  } catch {}
+
+  const save = () => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(stamps));
+    } catch {
+      // Storage blocked: stamps last until the page is closed.
+    }
+    count.textContent = String(stamps.length);
+  };
+
+  // A round rubber stamp: double ring, the top and bottom words set along the
+  // ring, stars between them, and the main word (or a drawing) in the middle.
+  let ringId = 0;
+  const round = (kind: Kind) => {
+    const id = `ring-${ringId++}`;
+    const main = kind.main.toUpperCase();
+    const size = Math.min(17, 64 / (main.length * 0.62));
+    const middle = kind.icon
+      ? `<svg x="34" y="33" width="52" height="52" viewBox="0 0 64 64" class="ink-art">${kind.icon}</svg>`
+      : `<text x="60" y="60" text-anchor="middle" dominant-baseline="central" font-size="${size}" font-weight="500" letter-spacing="1">${main}</text>`;
+    return `<svg viewBox="0 0 120 120" fill="currentColor">
+      <defs>
+        <path id="${id}-t" d="M 22 60 A 38 38 0 0 1 98 60" />
+        <path id="${id}-b" d="M 13 60 A 47 47 0 0 0 107 60" />
+      </defs>
+      <circle cx="60" cy="60" r="56" fill="none" stroke="currentColor" stroke-width="2.5" />
+      <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="1" />
+      <circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-width="1" />
+      <text font-size="9" letter-spacing="1.6"><textPath href="#${id}-t" startOffset="50%" text-anchor="middle">${(kind.top ?? '').toUpperCase()}</textPath></text>
+      <text font-size="9" letter-spacing="1.6"><textPath href="#${id}-b" startOffset="50%" text-anchor="middle">${(kind.bottom ?? '').toUpperCase()}</textPath></text>
+      <text x="13" y="63" font-size="8" text-anchor="middle">★</text>
+      <text x="107" y="63" font-size="8" text-anchor="middle">★</text>
+      ${middle}
+    </svg>`;
+  };
+
+  const draw = (s: Stamp, fresh = false) => {
+    const kind = kinds[s.k % kinds.length];
+    const el = document.createElement('span');
+    el.className = `stamp stamp-${kind.shape} stamp-${kind.tone}${fresh ? ' stamp-fresh' : ''}`;
+    el.style.left = `${s.x}%`;
+    el.style.top = `${s.y}%`;
+    el.style.setProperty('--r', `${s.r}deg`);
+    el.innerHTML =
+      kind.shape === 'circle' ? round(kind) : `<small>${kind.top}</small><b>${kind.main}</b><small>${kind.bottom}</small>`;
+    layers[s.side ?? 'front'].append(el);
+    return kind;
+  };
+
+  const redraw = () => {
+    layers.front.replaceChildren();
+    layers.back.replaceChildren();
+    stamps.forEach((s) => draw(s));
+  };
+
+  const add = (x: number, y: number) => {
+    const k = picked >= 0 ? picked : Math.floor(Math.random() * kinds.length);
+    const s: Stamp = { x, y, r: Math.round(Math.random() * 30 - 15), k, side };
+    stamps.push(s);
+    if (stamps.length > MAX) {
+      stamps.shift();
+      redraw();
+    }
+    const kind = draw(s, true);
+    save();
+    status.textContent = `Stamped ${kind.main} on the ${side === 'front' ? 'data page' : 'visa page'}. ${stamps.length} stamps.`;
+    // A little thump
+    if (motion) book.animate([{ scale: 0.985 }, { scale: 1 }], { duration: 220, easing: 'ease-out' });
+  };
+
+  redraw();
+  save();
+
+  // Click a page to stamp it where you clicked.
+  scene.addEventListener('click', (e) => {
+    const face = document.querySelector<HTMLElement>(`[data-face="${side}"]`)!;
+    const box = face.getBoundingClientRect();
+    add(((e.clientX - box.left) / box.width) * 100, ((e.clientY - box.top) / box.height) * 100);
+  });
+
+  pickers.forEach((button) =>
+    button.addEventListener('click', () => {
+      picked = Number(button.dataset.pick);
+      pickers.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+    }),
+  );
+
+  flipButton.addEventListener('click', () => {
+    side = side === 'front' ? 'back' : 'front';
+    book.classList.toggle('is-flipped', side === 'back');
+    flipButton.setAttribute('aria-pressed', String(side === 'back'));
+    status.textContent = side === 'back' ? 'Showing the visa page.' : 'Showing the data page.';
+  });
+
+  document.querySelector('[data-stamp-add]')!.addEventListener('click', () => {
+    add(15 + Math.random() * 70, 20 + Math.random() * 60);
+  });
+  document.querySelector('[data-stamp-clear]')!.addEventListener('click', () => {
+    stamps = [];
+    redraw();
+    save();
+    status.textContent = 'All stamps cleared.';
+  });
+
+  // Squishies: squash while held, jelly-wobble on release, count every squish.
+  const squishCount = document.querySelector<HTMLElement>('[data-squish-count]')!;
+  let squishes = Number(localStorage.getItem('squishes') ?? 0) || 0;
+  squishCount.textContent = String(squishes);
+  const wobble = (el: HTMLElement) => {
+    el.classList.remove('is-pressed');
+    squishes += 1;
+    squishCount.textContent = String(squishes);
+    try {
+      localStorage.setItem('squishes', String(squishes));
+    } catch {}
+    if (!motion) return;
+    el.animate(
+      [
+        { scale: '1.22 0.76' },
+        { scale: '0.86 1.16' },
+        { scale: '1.08 0.94' },
+        { scale: '0.97 1.03' },
+        { scale: '1 1' },
+      ],
+      { duration: 650, easing: 'ease-out' },
+    );
+  };
+  document.querySelectorAll<HTMLElement>('[data-squish]').forEach((el) => {
+    el.addEventListener('pointerdown', (e) => {
+      el.setPointerCapture(e.pointerId);
+      el.classList.add('is-pressed');
+    });
+    el.addEventListener('pointerup', () => el.classList.contains('is-pressed') && wobble(el));
+    el.addEventListener('pointercancel', () => el.classList.remove('is-pressed'));
+    // Keyboard (Enter / Space) has no pointer: squish in one go.
+    el.addEventListener('click', (e) => {
+      if (e.detail === 0) wobble(el);
+    });
+  });
+
+  // Tilt toward the pointer, with a hologram sheen that follows it (mouse only).
+  if (motion && matchMedia('(pointer: fine)').matches) {
+    scene.addEventListener('pointermove', (e) => {
+      const box = scene.getBoundingClientRect();
+      const x = (e.clientX - box.left) / box.width;
+      const y = (e.clientY - box.top) / box.height;
+      scene.style.setProperty('--ry', `${(x - 0.5) * 10}deg`);
+      scene.style.setProperty('--rx', `${(0.5 - y) * 8}deg`);
+      scene.style.setProperty('--mx', `${x * 100}%`);
+      scene.style.setProperty('--my', `${y * 100}%`);
+      scene.classList.add('is-tilting');
+    });
+    scene.addEventListener('pointerleave', () => {
+      scene.style.setProperty('--rx', '0deg');
+      scene.style.setProperty('--ry', '0deg');
+      scene.classList.remove('is-tilting');
+    });
+  }
+</script>
+
+<style>
+  /* Bento cells */
+  .cell {
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+  }
+
+  :global(.chip) {
+    display: inline-block;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background-color: var(--color-bg);
+    padding: 0.3rem 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  /* The passport keeps its own paper colors in both themes, like a real document. */
+  .passport {
+    --paper: #eef2ef;
+    --ink-navy: #1a2e49;
+    --guilloche: rgb(141 168 193 / 0.28);
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    border-radius: 1.25rem;
+    color: var(--ink-navy);
+    background-color: var(--paper);
+    background-image:
+      repeating-radial-gradient(circle at 85% 20%, transparent 0 9px, var(--guilloche) 9px 10px),
+      repeating-radial-gradient(circle at 10% 110%, transparent 0 13px, rgb(212 119 111 / 0.14) 13px 14px);
+    box-shadow:
+      inset 0 0 0 1px rgb(26 46 73 / 0.12),
+      0 24px 50px -30px var(--shadow);
+    padding: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .passport {
+      padding: 1.75rem 2rem 1.5rem;
+    }
+  }
+
+  .passport-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px dashed rgb(26 46 73 / 0.35);
+    padding-bottom: 0.75rem;
+  }
+  .passport-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+  }
+
+  .passport-body {
+    display: grid;
+    margin-bottom: 1.25rem;
+    grid-template-columns: minmax(6.5rem, 27%) 1fr;
+    gap: 1rem 1.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .passport-photo {
+    position: relative;
+    align-self: start;
+    overflow: hidden;
+    border-radius: 0.6rem;
+    box-shadow: 0 0 0 4px #fff, 0 8px 20px -10px rgb(0 0 0 / 0.4);
+    rotate: -1.5deg;
+  }
+  .passport-photo img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    filter: saturate(0.9) contrast(1.02);
+  }
+  /* A small hologram seal over the photo's corner */
+  .passport-holo {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    width: 2.6rem;
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background: conic-gradient(from 0deg, #ffb3ad, #fff3a8, #b8f5c8, #a8dcff, #d5b8ff, #ffb3ad);
+    opacity: 0.55;
+    mix-blend-mode: screen;
+    transition: filter 0.6s;
+  }
+  .passport:hover .passport-holo {
+    filter: hue-rotate(140deg);
+  }
+
+  .passport-fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-content: start;
+    gap: 0.6rem 1rem;
+  }
+  .passport-fields dt {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    opacity: 0.65;
+  }
+  .passport-fields dd {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .passport-fields dd.passport-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 5vw, 2.6rem);
+    font-weight: 400;
+    line-height: 1.05;
+  }
+  .passport-fields dd.passport-signature {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 1.1;
+  }
+  @media (max-width: 479px) {
+    .passport-body {
+      grid-template-columns: 1fr;
+    }
+    .passport-photo {
+      width: 9rem;
+    }
+    .passport-fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .passport-mrz {
+    margin-top: auto;
+    overflow: hidden;
+    border-top: 1px solid rgb(26 46 73 / 0.2);
+    padding-top: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: clamp(0.55rem, 1.6vw, 0.85rem);
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    opacity: 0.8;
+  }
+
+  /* Tilt (the scene) and flip (the book). Both faces share one grid cell, so the
+     book is as tall as the taller page. */
+  .passport-scene {
+    --rx: 0deg;
+    --ry: 0deg;
+    height: 100%;
+    perspective: 1400px;
+    cursor: crosshair;
+  }
+  .passport-book {
+    display: grid;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform 0.25s ease-out;
+  }
+  .passport-book.is-flipped {
+    transform: rotateX(var(--rx)) rotateY(calc(180deg + var(--ry)));
+  }
+  :global(.motion) .passport-book {
+    transition: transform 0.8s cubic-bezier(0.3, 1.3, 0.4, 1);
+  }
+  .passport-scene.is-tilting .passport-book {
+    transition-duration: 0.15s;
+  }
+  .passport-front,
+  .passport-back {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .passport-back {
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Hologram sheen that follows the pointer */
+  .passport-sheen {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background:
+      radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / 0.55), transparent 35%),
+      linear-gradient(115deg, transparent 30%, rgb(255 179 173 / 0.25) 42%, rgb(168 220 255 / 0.25) 50%, rgb(213 184 255 / 0.25) 58%, transparent 70%);
+    background-size: 100% 100%, 250% 250%;
+    background-position: 0 0, var(--mx, 50%) var(--my, 50%);
+    mix-blend-mode: soft-light;
+    transition: opacity 0.4s;
+  }
+  .passport-scene.is-tilting .passport-sheen {
+    opacity: 1;
+  }
+
+  /* Ghost photo, bottom right of the data page */
+  .passport-ghost {
+    position: absolute;
+    right: 2rem;
+    bottom: 4.6rem;
+    width: 4.5rem;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 0.3rem;
+    background: transparent;
+    filter: grayscale(1) contrast(1.3);
+    opacity: 0.16;
+    mix-blend-mode: multiply;
+    transition: opacity 0.4s;
+  }
+  .passport-scene.is-tilting .passport-ghost {
+    opacity: 0.32;
+  }
+  @media (max-width: 479px) {
+    .passport-ghost {
+      display: none;
+    }
+  }
+
+  /* Visa page */
+  .passport-watermark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 18vw, 12rem);
+    rotate: -12deg;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+  .passport-endorsements {
+    position: relative;
+    display: grid;
+    gap: 0.9rem;
+    margin-top: 1.5rem;
+    max-width: 34rem;
+  }
+  .passport-endorsements dt {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    opacity: 0.65;
+  }
+  .passport-endorsements dd {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 3.2vw, 1.9rem);
+    line-height: 1.15;
+  }
+  .passport-back-note {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    opacity: 0.6;
+  }
+
+  /* Stamp picker tiles: a mini ink stamp or the sticker art */
+  .tile {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    background-color: var(--color-bg);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .tile:hover {
+    transform: translateY(-2px) rotate(-3deg);
+  }
+  .tile[aria-pressed='true'] {
+    border-color: var(--color-accent);
+    box-shadow: inset 0 0 0 1px var(--color-accent);
+    background-color: var(--color-accent-soft);
+  }
+  .tile-art {
+    width: 72%;
+  }
+  .tile-art {
+    display: block;
+  }
+  .tile-art :global(svg) {
+    display: block;
+    width: 100%;
+  }
+  .tile-ink {
+    display: grid;
+    place-items: center;
+    width: 70%;
+    aspect-ratio: 1;
+    border: 2px double currentColor;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .tile-circle {
+    border-radius: 999px;
+  }
+  .tile-oval {
+    aspect-ratio: 1.5;
+    border-radius: 999px;
+  }
+  .tile-rect {
+    aspect-ratio: 1.4;
+    border-radius: 0.2rem;
+  }
+  .tile-accent {
+    color: var(--color-accent);
+  }
+  .tile-navy {
+    color: var(--color-secondary);
+  }
+
+  /* Drawings inside round stamps and picker tiles: one ink color, outlines only */
+  :global(.ink-art *) {
+    fill: none !important;
+    stroke: currentColor !important;
+    stroke-width: 3px !important;
+  }
+
+  /* Likes icons */
+  .like-art {
+    flex: none;
+    width: 2.6rem;
+  }
+  .like-art :global(svg) {
+    display: block;
+    width: 100%;
+  }
+
+  /* Songs: a play arrow shows on hover */
+  .play {
+    display: none;
+    color: var(--color-accent);
+    font-size: 0.9rem;
+  }
+  .song:hover .play,
+  .song:focus-visible .play {
+    display: inline;
+  }
+
+  /* The fanned cards are fixed-size; shrink the stage on phones */
+  @media (max-width: 639px) {
+    .made-stage {
+      height: 170px;
+    }
+    .made-stage :global(astro-island > div) {
+      flex: none;
+      scale: 0.5;
+      transform-origin: top center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .passport-book {
+      transition: none;
+    }
+  }
+
+  /* Stamps */
+  .stamps {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .stamps :global(.stamp) {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    padding: 0.45rem 0.8rem;
+    translate: -50% -50%;
+    rotate: var(--r);
+    border: 3px double currentColor;
+    font-family: var(--font-mono);
+    line-height: 1.1;
+    text-align: center;
+    text-transform: uppercase;
+    opacity: 0.82;
+    mix-blend-mode: multiply;
+    /* worn ink: a speckled mask so the stamp isn't perfectly solid */
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 2.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 2.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .stamps :global(.stamp small) {
+    max-width: 6.5rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+  }
+  .stamps :global(.stamp b) {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .stamps :global(.stamp-circle) {
+    width: 8rem;
+    padding: 0;
+    border: 0;
+  }
+  .stamps :global(.stamp-circle svg) {
+    display: block;
+    width: 100%;
+    overflow: visible;
+  }
+  .stamps :global(.stamp-oval) {
+    border-radius: 999px;
+    padding: 0.5rem 1.2rem;
+  }
+  .stamps :global(.stamp-rect) {
+    border-radius: 0.35rem;
+  }
+  .stamps :global(.stamp-accent) {
+    color: #b8423c;
+  }
+  .stamps :global(.stamp-navy) {
+    color: #27477a;
+  }
+  :global(.motion) .stamps :global(.stamp-fresh) {
+    animation: stamp-in 0.38s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  }
+  @keyframes stamp-in {
+    from {
+      scale: 1.9;
+      opacity: 0;
+    }
+    to {
+      scale: 1;
+      opacity: 0.82;
+    }
+  }
+
+  /* Equalizer next to the song playing now */
+  .eq {
+    display: flex;
+    align-items: end;
+    gap: 3px;
+    height: 1.1rem;
+    color: var(--color-accent);
+  }
+  .eq i {
+    width: 3px;
+    height: 40%;
+    border-radius: 2px;
+    background: currentColor;
+  }
+  :global(.motion) .eq i {
+    animation: eq 0.9s ease-in-out infinite alternate;
+  }
+  .eq i:nth-child(2) {
+    animation-delay: -0.3s !important;
+  }
+  .eq i:nth-child(3) {
+    animation-delay: -0.6s !important;
+  }
+  .eq i:nth-child(4) {
+    animation-delay: -0.15s !important;
+  }
+  @keyframes eq {
+    from {
+      height: 25%;
+    }
+    to {
+      height: 100%;
+    }
+  }
+
+  /* Squishy toys: soft round blobs with a face. Held = squashed flat. */
+  .squish {
+    position: relative;
+    width: min(100%, 8rem);
+    aspect-ratio: 1;
+    border-radius: 50% 50% 46% 46% / 58% 58% 42% 42%;
+    transform-origin: 50% 100%;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    cursor: grab;
+    box-shadow:
+      inset -10px -12px 0 rgb(0 0 0 / 0.1),
+      inset 8px 8px 0 rgb(255 255 255 / 0.35),
+      0 10px 18px -12px var(--shadow);
+    transition: scale 0.12s ease-out, border-radius 0.12s;
+  }
+  .squish-blue {
+    background-color: #b9d3ea;
+  }
+  .squish-pink {
+    background-color: #f6c3c9;
+  }
+  .squish:hover {
+    scale: 1.04 0.97;
+  }
+  .squish.is-pressed {
+    cursor: grabbing;
+    scale: 1.24 0.74;
+    border-radius: 50% 50% 40% 40% / 70% 70% 30% 30%;
+  }
+  .squish-face {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+  .squish-face i {
+    position: absolute;
+    display: block;
+  }
+  .squish-eye {
+    top: 44%;
+    width: 9%;
+    height: 12%;
+    border-radius: 999px;
+    background: #2a2226;
+    transition: height 0.12s, top 0.12s;
+  }
+  .squish-eye:nth-child(1) {
+    left: 30%;
+  }
+  .squish-eye:nth-child(2) {
+    right: 30%;
+  }
+  .squish-mouth {
+    top: 58%;
+    left: 50%;
+    width: 14%;
+    height: 7%;
+    translate: -50% 0;
+    border: 2.5px solid #2a2226;
+    border-top: 0;
+    border-radius: 0 0 999px 999px;
+    transition: height 0.12s, width 0.12s;
+  }
+  .squish-blush {
+    top: 58%;
+    width: 14%;
+    height: 7%;
+    border-radius: 999px;
+    background: rgb(232 112 128 / 0.55);
+  }
+  .squish-blush:nth-child(4) {
+    left: 14%;
+  }
+  .squish-blush:nth-child(5) {
+    right: 14%;
+  }
+  /* Squashed: eyes squeeze shut, mouth opens wide */
+  .squish.is-pressed .squish-eye {
+    top: 48%;
+    height: 3%;
+  }
+  .squish.is-pressed .squish-mouth {
+    width: 20%;
+    height: 11%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .squish {
+      transition: none;
+    }
+  }
+</style>
