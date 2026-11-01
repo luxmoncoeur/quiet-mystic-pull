@@ -3,14 +3,15 @@ number: 2
 title: "Life Between *Frames*"
 type: "Photography" # art form
 medium: "Shot on Fujifilm X-A5"
-date: "(date made)"
+date: "February – October 2026"
 authorship: Individual
 familiar: false # only ONE Part II work may be true
 gallery_style: contact-sheet # masonry | contact-sheet | carousel | grid
 media:
-  # The featured photo goes first; it's a placeholder until you add it.
+  # The featured photo goes first. Metadata: assets-raw/.../main-photo-reference-metadata.JPG
   - src: /art/part2/photography/hero.webp
-    alt: "(featured photo, to follow)"
+    alt: "A stepping-stone path runs through a tunnel of star-shaped metal frames in navy, green, and orange on the Bravehearts promenade, with the late-afternoon sun flaring through on the right and the Bravehearts sign behind. A caption at the bottom reads: All roads lead back to you."
+    details: ["Fujifilm X-A5", "Oct 28, 2026", "f/10 · 1/125s · ISO 800"]
   # The journey: moments from my camera roll, oldest first.
   # details = camera / date taken / settings, read from each photo's metadata.
   - src: /art/part2/photography/bravevo-1.webp
@@ -54,17 +55,17 @@ media:
     details: ["Fujifilm X-A5", "Sep 30, 2026", "f/11 · 1/200s · ISO 4000"]
 process:
   - src: /art/part2/photography/process-1.webp
-    alt: "(describe this stage)"
-    date: "(date)"
-    caption: "(one-line factual caption)"
+    alt: "Wide shot of the campus field in the late afternoon: a tall column with a statue on top, students in white uniforms gathered at its base, and the orange Bravehearts letters at the edge of the frame."
+    date: "Oct 28, 2026 · 5:04 PM"
+    caption: "Finding the right vibe and subject: walking the field in the golden hour, looking for a scene that felt warm and quiet enough to hold a single feeling."
   - src: /art/part2/photography/process-2.webp
-    alt: "(describe this stage)"
-    date: "(date)"
-    caption: "(one-line factual caption)"
+    alt: "The orange Bravehearts sign standing on a low hedge at the far end of the Bravehearts promenade, with trees and a setting sun behind it and three students beside it."
+    date: "Oct 28, 2026 · 5:03 PM"
+    caption: "Checking the overall place: scanning the Bravehearts promenade to see where the light, the sign, and the open grass could frame the main picture."
   - src: /art/part2/photography/process-3.webp
-    alt: "(describe this stage)"
-    date: "(date)"
-    caption: "(one-line factual caption)"
+    alt: "An off-center test shot through the star-shaped metal frames, with the stepping-stone path curving to the right and the Bravehearts sign in the background."
+    date: "Oct 28, 2026 · 5:05 PM"
+    caption: "Testing sample angles: trying off-center and low shots through the star frames before settling on the straight view down the path."
 ---
 
 With the camera that my sister gave me for my birthday, the Fujifilm X-A5, I take pictures of school events and the moments that I wish to treasure. In this gallery of photographs, you will see images that I have taken that contain moments that I would like to remember.
