@@ -1,0 +1,15 @@
+---
+// A long, thin arrow (a hairline and a small open head). Inside a `.group`
+// link it stretches on hover; see `.long-arrow` in global.css.
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<span class:list={['long-arrow inline-flex items-center', className]} aria-hidden="true">
+  <span class="h-px flex-1 bg-current"></span>
+  <svg viewBox="0 0 7 12" class="-ml-1.5 h-3 w-[7px] shrink-0">
+    <path d="M1 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.1"></path>
+  </svg>
+</span>

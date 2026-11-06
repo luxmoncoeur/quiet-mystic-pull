@@ -1,6 +1,7 @@
 ---
 import { render } from 'astro:content';
 import { join } from 'node:path';
+import { statSync } from 'node:fs';
 import sharp from 'sharp';
 import Layout from '../../layouts/Layout.astro';
 import SectionHeader from '../../components/SectionHeader.astro';
@@ -8,10 +9,19 @@ import SkipLink from '../../components/SkipLink.astro';
 import Marquee from '../../components/Marquee.astro';
 import MuseumLabel from '../../components/MuseumLabel.astro';
 import Doodle from '../../components/Doodle.astro';
+import PoemCard from '../../components/PoemCard.astro';
+import NextRoom from '../../components/NextRoom.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
 import { part1Months, wings } from '../../data/site';
-import { getPart1, pad } from '../../lib/content';
+import { getPart1, getPart2, pad } from '../../lib/content';
 
 const works = await getPart1();
+const part2 = await getPart2();
+// Thumbnail for the "next room" plaque: the first real Part II image. Tiny files
+// are placeholders still waiting for the real artwork, so they're skipped.
+const nextThumb =
+  part2.flatMap((w) => w.data.media).find((m) => (statSync(join("public", m.src), { throwIfNoEntry: false })?.size ?? 0) > 20_000) ??
+  part2[0].data.media[0];
 const wing = wings[1];
 const activityTypes = [...new Set(works.map((w) => w.data.type).filter((t): t is string => Boolean(t)))];
 
@@ -52,6 +62,8 @@ const shapes = Object.fromEntries(
     works.map(async (w) => {
       const { width = 1, height = 1 } = await sharp(join('public', w.data.media[0].src)).metadata();
       const wide = width / height >= 1.3;
+      if (w.data.poem) return [w.id, 'poem'] as const;
+      if (w.data.videos.length > 0) return [w.id, 'video'] as const;
       return [w.id, !wide ? 'side' : width >= 1200 ? 'stacked' : 'split'] as const;
     }),
   ),
@@ -63,6 +75,7 @@ const shapes = Object.fromEntries(
     numeral={wing.numeral}
     title={wing.title}
     line="All outputs from GEARTS, individual and group, in the order I made them."
+    aside={[`${works.length} works · ${rooms.length} rooms`, `${rooms[0].name} – ${rooms.at(-1)!.name} 2026`]}
   >
     <div class="mt-8"><SkipLink href="#rooms" label="Skip animation →" /></div>
   </SectionHeader>
@@ -72,92 +85,187 @@ const shapes = Object.fromEntries(
   <div id="rooms" class="scroll-mt-24">
     {
       rooms.map((room, i) => (
-        <section class="pt-24" aria-labelledby={`${room.id}-heading`}>
+        <section class="pt-16 sm:pt-20" aria-labelledby={`${room.id}-heading`}>
           <div class="flex flex-wrap items-end gap-x-6 gap-y-2">
-            <h2 id={`${room.id}-heading`} data-split class="font-display text-[clamp(3.5rem,13vw,9rem)] leading-none italic">
+            <h2 id={`${room.id}-heading`} data-split class="font-display text-[clamp(3rem,9vw,6.5rem)] leading-none italic">
               {room.name}
             </h2>
             <p class="label pb-[0.6em] text-muted" data-reveal="fade">( Room {i + 1} · 2026 )</p>
           </div>
           <Doodle shape="wave" class="mt-3 w-44 text-accent sm:w-56" />
-          {room.note && <p class="mt-6 max-w-2xl" data-reveal>{room.note}</p>}
+          {room.note && <p class="mt-5 max-w-2xl text-lg" data-reveal>{room.note}</p>}
 
-          <ol class="mt-12 space-y-20 lg:space-y-24">
+          <ol class="mt-10 space-y-16 lg:space-y-20">
             {room.works.map((work) => {
-              const href = `/part-1/${work.id}`;
+              // Everything lives on this page: images open in the lightbox (arrows step
+              // through the whole wing), and each work has an anchor, e.g. /part-1#painting.
               const [main] = work.data.media;
+              const zoom = { href: main.src, 'data-lightbox': true, 'data-group': 'part1' };
               const hang = hangs[(work.data.number - 1) % hangs.length];
               const Caption = captions[work.id];
               const shape = shapes[work.id];
               const flip = work.data.number % 2 === 0;
-              const image = (extra: string) => (
-                <a href={href} data-reveal class="block overflow-hidden">
-                  <img
-                    src={main.src}
-                    alt={main.alt}
-                    loading="lazy"
-                    decoding="async"
-                    class:list={[
-                      'block h-auto w-full bg-transparent transition-transform duration-1000 ease-out motion-safe:hover:scale-[1.02]',
-                      extra,
-                    ]}
-                  />
+              // Paintings and drawings hang in a gilded frame with a mat (.gilt in global.css).
+              const image = (extra: string, framed = true) => (
+                <a {...zoom} data-reveal class="block cursor-zoom-in">
+                  <span class:list={[framed ? 'gilt' : 'block']}>
+                    <span class:list={[framed ? 'gilt-mat' : 'block overflow-hidden']}>
+                      <img
+                        src={main.src}
+                        alt={main.alt}
+                        loading="lazy"
+                        decoding="async"
+                        class:list={[
+                          'mx-auto block h-auto w-full bg-transparent transition-transform duration-1000 ease-out motion-safe:hover:scale-[1.02]',
+                          extra,
+                        ]}
+                      />
+                    </span>
+                  </span>
                 </a>
               );
               const label = (
                 <div>
-                  <p class="font-display text-7xl leading-none text-accent" aria-hidden="true">
+                  <p class="font-display text-5xl leading-none text-accent sm:text-6xl" aria-hidden="true">
                     {pad(work.data.number)}
                   </p>
-                  <MuseumLabel work={work.data} heading="h3" href={href} showNumber={false} />
+                  <MuseumLabel work={work.data} heading="h3" showNumber={false} />
                 </div>
               );
               const caption = (
                 <div class="prose-body max-w-prose">
                   <Caption />
+                  {work.data.document && (
+                    // A small cover of the document beside its link, instead of a big image.
+                    // The document's cover page, big enough to read its heading, with its link.
+                    <a
+                      href={work.data.document}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="group grid grid-cols-[minmax(0,13rem)_1fr] items-end gap-5 no-underline! sm:gap-8"
+                    >
+                      <span class="block border border-rule bg-white p-1 shadow-[0_18px_30px_-18px_var(--shadow)] transition-transform duration-500 group-hover:-translate-y-1">
+                        <img src={main.src} alt={main.alt} loading="lazy" class="block h-auto w-full bg-transparent" />
+                      </span>
+                      <span class="pb-2">
+                        <span class="label block text-muted">Written analysis · PDF</span>
+                        <span class="label mt-2 inline-block underline underline-offset-4 transition-colors group-hover:text-accent">
+                          Open the full document ↗<span class="sr-only"> (opens in a new tab)</span>
+                        </span>
+                      </span>
+                    </a>
+                  )}
                 </div>
               );
+              // Videos sit under the work, full width.
+              const videos = work.data.videos.length > 0 && (
+                <div class="mt-10 grid gap-8 md:grid-cols-2" data-reveal>
+                  {work.data.videos.map((v) => (
+                    <VideoEmbed {...v} />
+                  ))}
+                </div>
+              );
+              const item = 'scroll-mt-28';
+
+              // Videos: the YouTube embed takes the place of the image, with the
+              // label and caption beside it.
+              if (shape === 'video')
+                return (
+                  <li id={work.id} class={item}>
+                    <div
+                      class:list={[
+                        'grid items-start gap-8 lg:gap-12',
+                        flip ? 'lg:grid-cols-[minmax(20rem,1fr)_minmax(0,1.4fr)]' : 'lg:grid-cols-[minmax(0,1.4fr)_minmax(20rem,1fr)]',
+                      ]}
+                    >
+                      <div data-reveal class:list={['space-y-6 lg:sticky lg:top-24', flip && 'lg:order-2']}>
+                        {work.data.videos.map((v) => (
+                          <VideoEmbed {...v} />
+                        ))}
+                      </div>
+                      <div data-reveal class:list={[flip && 'lg:order-1']}>
+                        {label}
+                        <div class="mt-6">{caption}</div>
+                      </div>
+                    </div>
+                  </li>
+                );
+
+              // Book spine poems: the photo and the poem card side by side, then the
+              // label and caption below, like a record sleeve and its liner notes.
+              if (shape === 'poem')
+                return (
+                  <li id={work.id} class={item}>
+                    <div
+                      class:list={[
+                        'grid items-center gap-8 lg:gap-12',
+                        flip ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]' : 'lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]',
+                      ]}
+                    >
+                      <div class:list={[flip && 'lg:order-2']}>{image('lg:max-h-[70svh] lg:object-contain', false)}</div>
+                      <div data-reveal class:list={[flip && 'lg:order-1']}>
+                        <PoemCard lines={work.data.poem!} />
+                      </div>
+                    </div>
+                    <div class="mt-8 grid gap-8 lg:mt-10 lg:grid-cols-2 lg:gap-12" data-reveal>
+                      <div>{label}</div>
+                      <div class="lg:pt-20">{caption}</div>
+                    </div>
+                    {videos}
+                  </li>
+                );
 
               if (shape === 'stacked')
                 return (
-                  <li>
+                  <li id={work.id} class={item}>
                     {image('lg:max-h-[86svh] lg:object-contain')}
                     <div class="mt-8 grid gap-8 lg:mt-10 lg:grid-cols-2 lg:gap-12" data-reveal>
                       <div class:list={[flip && 'lg:order-2']}>{label}</div>
                       <div class:list={['lg:pt-20', flip && 'lg:order-1']}>{caption}</div>
                     </div>
+                    {videos}
                   </li>
                 );
 
               if (shape === 'split')
                 return (
-                  <li class="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(20rem,1fr)] lg:gap-12">
-                    <div>
-                      {image('')}
-                      <div class="mt-8" data-reveal>{caption}</div>
+                  <li id={work.id} class={item}>
+                    <div class="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(20rem,1fr)] lg:gap-12">
+                      <div>
+                        {image('')}
+                        <div class="mt-8" data-reveal>{caption}</div>
+                      </div>
+                      <div data-reveal>{label}</div>
                     </div>
-                    <div data-reveal>{label}</div>
+                    {videos}
                   </li>
                 );
 
               return (
-                <li class:list={['grid gap-8 lg:gap-12', hang.li]}>
-                  <a href={href} data-reveal class:list={['block overflow-hidden', hang.art]}>
-                    <img
-                      src={main.src}
-                      alt={main.alt}
-                      loading="lazy"
-                      decoding="async"
-                      class:list={[
-                        'block h-auto w-full bg-transparent transition-transform duration-1000 ease-out motion-safe:hover:scale-[1.02] lg:w-auto lg:max-w-[58vw]',
-                        hang.img,
-                      ]}
-                    />
+                <li id={work.id} class={item}>
+                <div class:list={['grid gap-8 lg:gap-12', hang.li]}>
+                  <a {...zoom} data-reveal class:list={['block cursor-zoom-in', hang.art]}>
+                    <span class="gilt">
+                      <span class="gilt-mat">
+                        <img
+                          src={main.src}
+                          alt={main.alt}
+                          loading="lazy"
+                          decoding="async"
+                          class:list={[
+                            'block h-auto w-full bg-transparent transition-transform duration-1000 ease-out motion-safe:hover:scale-[1.02] lg:w-auto lg:max-w-[52vw]',
+                            hang.img,
+                          ]}
+                        />
+                      </span>
+                    </span>
                   </a>
                   <div data-reveal class={hang.text}>
                     {label}
                     <div class="mt-6">{caption}</div>
                   </div>
+                </div>
+                {videos}
                 </li>
               );
             })}
@@ -167,7 +275,5 @@ const shapes = Object.fromEntries(
     }
   </div>
 
-  <a href="/part-2" data-reveal class="mt-40 block border-y border-ink py-12 text-center font-display text-4xl transition-colors duration-500 hover:border-accent hover:bg-accent hover:text-bg sm:text-6xl">
-    Continue to Part II →
-  </a>
+  <NextRoom href="/part-2" title={wings[2].title} note={`${part2.length} works`} items={part2.map((w) => w.data.title)} image={nextThumb} />
 </Layout>

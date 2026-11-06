@@ -1,0 +1,65 @@
+---
+// The "next room" plaque at the end of a wing: a deep red panel across the full
+// width. Left: a small gilded thumbnail. Middle: "Next Room" on one line and
+// the room's name. Right: what's inside (a short list) and a long arrow.
+// The whole panel is the link. Phones stack the three parts.
+import LongArrow from './LongArrow.astro';
+import { plain } from '../lib/content';
+
+interface Props {
+  href: string;
+  title: string; // the next room, e.g. "My Artistic *Exploration*"
+  note?: string; // e.g. "3 works"
+  items?: string[]; // what's inside, e.g. the work titles
+  image: { src: string; alt: string };
+  word?: string; // the italic word after "Next", e.g. "Work"
+}
+
+const { href, title, note, items = [], image, word = 'Room' } = Astro.props;
+---
+
+<a
+  href={href}
+  data-reveal
+  class="next-room group mt-14 grid grid-cols-[6.5rem_1fr] items-center gap-x-5 gap-y-5 p-4 transition-[filter] duration-500 hover:brightness-110 sm:mt-16 sm:grid-cols-[auto_1fr] sm:gap-8 sm:p-6 lg:grid-cols-[auto_1fr_minmax(16rem,22rem)] lg:gap-10"
+>
+  <span class="gilt w-full [--gilt-pad:0.35rem] sm:w-52 sm:[--gilt-pad:clamp(0.5rem,1.1vw,0.9rem)] lg:w-60">
+    <span class="gilt-mat aspect-4/3 p-1! sm:p-[clamp(0.4rem,1vw,0.85rem)]!">
+      <img src={image.src} alt="" loading="lazy" class="h-full w-full bg-transparent object-cover" />
+    </span>
+  </span>
+
+  <span class="block">
+    <span class="block font-display text-3xl leading-none sm:text-5xl">
+      Next <span class="italic">{word}</span>
+    </span>
+    <span class="label mt-3 block tracking-[0.08em] uppercase sm:mt-5">{plain(title)}</span>
+  </span>
+
+  <span class="col-span-2 block border-t border-white/30 pt-4 pb-1 lg:col-span-1 lg:border-t-0 lg:border-l lg:pt-0 lg:pb-0 lg:pl-8">
+    {
+      items.length > 0 && (
+        <span class="block space-y-1.5">
+          {items.map((item, i) => (
+            <span class="flex items-baseline gap-3">
+              <span class="label opacity-70">{String(i + 1).padStart(2, '0')}</span>
+              <span class="font-display text-xl leading-tight">{plain(item)}</span>
+            </span>
+          ))}
+        </span>
+      )
+    }
+    <span class="mt-5 flex items-center justify-between gap-4">
+      {note && <span class="label tracking-[0.08em] uppercase opacity-80">{note}</span>}
+      <LongArrow />
+    </span>
+  </span>
+</a>
+
+<style>
+  /* Same deep red in both themes so the white text always reads. */
+  .next-room {
+    background-color: #8f2f26;
+    color: #fff;
+  }
+</style>
