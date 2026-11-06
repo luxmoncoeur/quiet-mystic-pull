@@ -39,6 +39,7 @@ const part1 = defineCollection({
       note: z.string().optional(),
       highlight: z.boolean().default(false), // shows in the landing hallway
       document: z.string().optional(), // e.g. a PDF in public/art/part1/
+      poem: z.array(z.string()).optional(), // one line per book spine, top to bottom
       media: z.array(image).min(1, 'Add at least one image'),
       videos: z.array(video).default([]),
     })
@@ -102,7 +103,13 @@ const appendices = defineCollection({
 
 const reflection = defineCollection({
   loader: glob({ pattern: 'reflection.md', base: './src/content' }),
-  schema: z.object({}),
+  schema: z.object({
+    // The Substack-style cover card at the top of the page
+    title: z.string().optional(),
+    subtitle: z.string().optional(),
+    date: z.string().optional(),
+    cover: image.optional(),
+  }),
 });
 
 export const collections = { part1, part2, appendices, reflection };

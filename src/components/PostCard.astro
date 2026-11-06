@@ -1,0 +1,146 @@
+---
+// A Substack-style post card: the cover photo fading into a deep sea-blue
+// panel, a bold title, a softer subtitle, and a bookmark button. With `href`
+// the whole card links to the post; without it, it's the post's own cover.
+// The bookmark is real: it's remembered on this device (localStorage).
+interface Props {
+  title: string;
+  subtitle?: string;
+  cover: { src: string; alt: string };
+  href?: string;
+  id?: string; // key for the saved bookmark
+  heading?: 'h1' | 'h2' | 'p';
+  compact?: boolean; // smaller photo and type, e.g. in a side column that must fit one screen
+}
+
+const { title, subtitle, cover, href, id = 'reflection', heading: Heading = 'p', compact = false } = Astro.props;
+---
+
+<div class:list={['post-card group relative overflow-hidden rounded-2xl', compact && 'is-compact']} data-post-card>
+  <div
+    class:list={[
+      'relative overflow-hidden',
+      compact ? 'aspect-[16/10] lg:aspect-auto lg:h-[min(16rem,30svh)]' : 'aspect-[4/3] sm:aspect-[16/10]',
+    ]}
+  >
+    <img
+      src={cover.src}
+      alt={cover.alt}
+      class="h-full w-full bg-transparent object-cover object-[50%_78%] transition-transform duration-1000 ease-out motion-safe:group-hover:scale-[1.03]"
+    />
+    <div class="post-card-fade absolute inset-x-0 bottom-0 h-2/3" aria-hidden="true"></div>
+  </div>
+
+  <div class:list={['post-card-panel flex items-end gap-6 px-5 pt-1', compact ? 'pb-5 sm:px-6' : 'pb-6 sm:px-8 sm:pb-8']}>
+    <div class="min-w-0 flex-1">
+      <Heading class="post-card-title">
+        {
+          href ? (
+            <a href={href} class="after:absolute after:inset-0 after:content-['']">
+              {title}
+            </a>
+          ) : (
+            title
+          )
+        }
+      </Heading>
+      {subtitle && <p class="post-card-subtitle mt-2">{subtitle}</p>}
+    </div>
+    <button
+      type="button"
+      class="post-card-save relative z-10 grid size-12 shrink-0 place-items-center rounded-xl transition-colors"
+      aria-pressed="false"
+      aria-label="Save this post"
+      data-save={id}
+    >
+      <svg viewBox="0 0 24 24" class="size-6" aria-hidden="true">
+        <path d="M6 3.75h12v16.5l-6-4.2-6 4.2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  .post-card {
+    /* Fixed in both themes: the night photo always sits on deep sea-blue. */
+    --panel: #0d1a26;
+    background-color: var(--panel);
+    color: #fff;
+  }
+
+  .post-card-fade {
+    background: linear-gradient(to bottom, transparent, var(--panel));
+  }
+
+  .post-card-panel {
+    background-color: var(--panel);
+    margin-top: -1px;
+  }
+
+  .post-card-title {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .post-card-subtitle {
+    font-family: var(--font-sans);
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    line-height: 1.45;
+    color: color-mix(in srgb, #fff 68%, var(--panel));
+  }
+
+  .is-compact .post-card-title {
+    font-size: clamp(1.25rem, 1.7vw, 1.5rem);
+  }
+
+  .is-compact .post-card-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .is-compact .post-card-save {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .post-card-save {
+    background-color: color-mix(in srgb, #fff 14%, var(--panel));
+  }
+
+  .post-card-save:hover {
+    background-color: color-mix(in srgb, #fff 24%, var(--panel));
+  }
+
+  .post-card-save path {
+    fill: none;
+    transition: fill 0.2s ease;
+  }
+
+  .post-card-save[aria-pressed='true'] path {
+    fill: currentColor;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-save]').forEach((button) => {
+    const key = `saved:${button.dataset.save}`;
+    const show = (saved: boolean) => {
+      button.setAttribute('aria-pressed', String(saved));
+      button.setAttribute('aria-label', saved ? 'Saved. Remove from saved' : 'Save this post');
+    };
+    show(localStorage.getItem(key) === '1');
+    button.addEventListener('click', () => {
+      const saved = button.getAttribute('aria-pressed') !== 'true';
+      if (saved) localStorage.setItem(key, '1');
+      else localStorage.removeItem(key);
+      // Keep every copy of this card on the page in step.
+      document.querySelectorAll<HTMLButtonElement>(`[data-save="${button.dataset.save}"]`).forEach((b) => {
+        b.setAttribute('aria-pressed', String(saved));
+      });
+      show(saved);
+    });
+  });
+</script>
