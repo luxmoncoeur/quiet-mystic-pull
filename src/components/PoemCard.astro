@@ -1,0 +1,73 @@
+---
+// A book spine poem set like a music app's lyrics view: one line per row in
+// big bold type on a deep red card. Lines wait dimmed and light up white as you
+// hover (or tab to) them, so you read it one spine at a time. On touch screens,
+// which can't hover, every line is simply lit.
+interface Props {
+  lines: string[];
+  label?: string;
+}
+
+const { lines, label = 'Poem' } = Astro.props;
+---
+
+<section class="poem rounded-2xl px-6 py-8 sm:px-10 sm:py-10" aria-label={label}>
+  <p class="poem-label">{label}</p>
+  <ol class="poem-lines mt-5 space-y-2">
+    {
+      lines.map((line) => (
+        <li class="poem-line" tabindex="0">
+          {line}
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .poem {
+    /* Fixed in both themes, so the white lines always read clearly. */
+    --poem-bg: #823735;
+    --poem-lit: #ffffff;
+    --poem-dim: color-mix(in srgb, #000 38%, var(--poem-bg));
+    background-color: var(--poem-bg);
+    color: var(--poem-lit);
+  }
+
+  .poem-label {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .poem-line {
+    font-family: var(--font-sans);
+    font-weight: 750;
+    font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    color: var(--poem-lit);
+    cursor: default;
+    outline: none;
+    transition: color 0.35s ease;
+  }
+
+  /* Where hovering is possible, lines start dimmed and light up on hover/focus. */
+  @media (hover: hover) {
+    .poem-line {
+      color: var(--poem-dim);
+    }
+    .poem-line:hover,
+    .poem-line:focus-visible {
+      color: var(--poem-lit);
+    }
+  }
+
+  .poem-line:focus-visible {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.15em;
+  }
+
+</style>

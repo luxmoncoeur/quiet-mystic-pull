@@ -1,79 +1,13 @@
 ---
-import { render } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import MuseumLabel from '../../components/MuseumLabel.astro';
-import PrevNext from '../../components/PrevNext.astro';
-import VideoEmbed from '../../components/VideoEmbed.astro';
+// Part I works no longer have their own pages: everything (photo, poem, label,
+// caption, videos) is shown in the wing itself. Old links like
+// /part-1/painting land on that work's spot instead: /part-1#painting.
 import { getPart1 } from '../../lib/content';
 
 export async function getStaticPaths() {
   const works = await getPart1();
-  return works.map((work, i) => ({
-    params: { slug: work.id },
-    props: { work, prev: works[i - 1], next: works[i + 1] },
-  }));
+  return works.map((work) => ({ params: { slug: work.id } }));
 }
 
-const { work, prev, next } = Astro.props;
-const { Content } = await render(work);
-const [main, ...extras] = work.data.media;
-const link = (w?: typeof work) => w && { href: `/part-1/${w.id}`, label: w.data.title };
+return Astro.redirect(`/part-1#${Astro.params.slug}`);
 ---
-
-<Layout title={work.data.title} room={2}>
-  <article class="pt-28">
-    <a
-      href="/part-1"
-      data-back
-      class="label inline-flex items-center gap-2 border border-border bg-surface px-3 py-1.5 transition-colors hover:border-accent hover:text-accent"
-    >
-      ← Back to <span data-back-label>Part I</span>
-    </a>
-    <div class="mt-8"></div>
-    <a href={main.src} data-lightbox data-reveal class="block">
-      <img src={main.src} alt={main.alt} class="mx-auto max-h-[85svh] w-auto bg-transparent" />
-    </a>
-
-    {
-      extras.length > 0 && (
-        <ul class="mt-6 flex gap-4 overflow-x-auto pb-2" aria-label="More photos">
-          {extras.map((img) => (
-            <li class="shrink-0">
-              <a href={img.src} data-lightbox>
-                <img src={img.src} alt={img.alt} loading="lazy" class="h-28 w-auto sm:h-36" />
-              </a>
-            </li>
-          ))}
-        </ul>
-      )
-    }
-
-    {
-      work.data.videos.length > 0 && (
-        <div class="mt-12 grid gap-8 md:grid-cols-2">
-          {work.data.videos.map((v) => (
-            <VideoEmbed {...v} />
-          ))}
-        </div>
-      )
-    }
-
-    <div class="mt-16 grid gap-10 lg:grid-cols-2" data-reveal>
-      <MuseumLabel work={work.data} heading="h1" />
-      <div class="prose-body max-w-prose lg:pt-4">
-        <Content />
-        {
-          work.data.document && (
-            <p>
-              <a href={work.data.document} target="_blank" rel="noopener noreferrer" class="label">
-                Open the full document ↗<span class="sr-only"> (opens in a new tab)</span>
-              </a>
-            </p>
-          )
-        }
-      </div>
-    </div>
-  </article>
-
-  <PrevNext prev={link(prev)} next={link(next)} back={{ href: '/part-1', label: '↑ Back to the wing' }} />
-</Layout>
