@@ -16,14 +16,14 @@ interface Props {
 const { prev, next, back } = Astro.props;
 ---
 
-<nav aria-label="More works" class="mt-24 border-t border-ink pt-6">
+<nav aria-label="More works" class="mt-16 border-t border-rule pt-6">
   <div class="grid gap-6 sm:grid-cols-3">
     <div>
       {
         prev && (
           <a href={prev.href} class="group block">
             <span class="label text-muted">← Previous</span>
-            <span class="block font-display text-2xl transition-colors group-hover:text-accent">{plain(prev.label)}</span>
+            <span class="mt-1 block font-display text-xl leading-tight transition-colors group-hover:text-accent sm:text-2xl">{plain(prev.label)}</span>
           </a>
         )
       }
@@ -36,7 +36,7 @@ const { prev, next, back } = Astro.props;
         next && (
           <a href={next.href} class="group block">
             <span class="label text-muted">Next →</span>
-            <span class="block font-display text-2xl transition-colors group-hover:text-accent">{plain(next.label)}</span>
+            <span class="mt-1 block font-display text-xl leading-tight transition-colors group-hover:text-accent sm:text-2xl">{plain(next.label)}</span>
           </a>
         )
       }

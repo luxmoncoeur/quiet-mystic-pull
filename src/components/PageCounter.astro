@@ -10,7 +10,7 @@ interface Props {
 const { room } = Astro.props;
 ---
 
-<p class="label pointer-events-none fixed right-4 bottom-4 z-30 bg-bg/85 px-2 py-0.5 sm:right-8 sm:bottom-6">
+<p class="label pointer-events-none fixed right-4 bottom-4 z-30 hidden bg-bg/85 px-2 py-0.5 sm:right-8 sm:bottom-6 sm:block">
   <span class="sr-only">Room {room} of {wings.length}:</span>
   <span aria-hidden="true">( {pad(room)} / {pad(wings.length)} )</span>
   <span class="sr-only">{plain(wings[room - 1].title)}</span>

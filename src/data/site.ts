@@ -19,8 +19,6 @@ export const site = {
     course: 'GEARTS · Art Appreciation',
     section: 'BSIT 3A',
     year: 2026,
-    credits:
-      'Set in Instrument Serif, Inter, and IBM Plex Mono. Built with Astro and Tailwind CSS.',
   },
 };
 

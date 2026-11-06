@@ -26,18 +26,18 @@ const link = (a?: typeof appendix) =>
 ---
 
 <Layout title={`Appendix ${data.number}: ${data.title}`} room={5}>
-  <header class="pt-32 pb-12">
+  <header class="pt-28 pb-8">
     {work && <a href={`/part-2/${work.id}`} class="label block w-fit underline-offset-4 transition-colors hover:text-accent hover:underline">← Back to the work</a>}
-    <h1 class="mt-8 inline-block border border-b-0 border-ink px-5 pt-3 pb-2 font-mono text-lg sm:text-2xl">
+    <h1 class="mt-8 inline-block border border-b-0 border-rule px-5 pt-3 pb-2 font-mono text-lg sm:text-2xl">
       {pad(data.number)} <span class="text-muted">/</span> {data.title}
     </h1>
-    <div class="border-t border-ink"></div>
+    <div class="border-t border-rule"></div>
   </header>
 
   <!-- TIMELINE OF EVIDENCE -->
   <section aria-labelledby="timeline-heading">
     <h2 id="timeline-heading" class="label">( Timeline of evidence )</h2>
-    <ol class="mt-8 space-y-16 border-l border-ink pl-6 sm:pl-10">
+    <ol class="mt-8 space-y-12 border-l border-rule pl-6 sm:pl-10">
       {
         items.map((item) => (
           <li data-reveal class="grid gap-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
@@ -62,9 +62,9 @@ const link = (a?: typeof appendix) =>
   <!-- FILES AND LINKS (only when there are any) -->
   {
     data.links.length > 0 && (
-      <section aria-labelledby="links-heading" class="mt-24">
+      <section aria-labelledby="links-heading" class="mt-16">
         <h2 id="links-heading" class="label">( Files and links )</h2>
-        <ul class="mt-6 divide-y divide-border border-y border-ink">
+        <ul class="mt-6 divide-y divide-border border-y border-rule">
           {data.links.map((l) => (
             <li class="py-4">
               <a href={l.url} target="_blank" rel="noopener noreferrer" class="font-display text-2xl underline underline-offset-4 transition-colors hover:text-accent">
@@ -81,11 +81,11 @@ const link = (a?: typeof appendix) =>
   <!-- METADATA -->
   {
     data.metadata && (
-      <section aria-labelledby="meta-heading" class="mt-24">
+      <section aria-labelledby="meta-heading" class="mt-16">
         <h2 id="meta-heading" class="label">( Metadata )</h2>
         <div class="mt-6 overflow-x-auto" tabindex="0" role="region" aria-labelledby="meta-heading">
           <table class="w-full text-left">
-            <thead class="label border-b border-ink">
+            <thead class="label border-b border-rule">
               <tr>{data.metadata.columns.map((c) => <th scope="col" class="py-2 pr-6 font-normal">{c}</th>)}</tr>
             </thead>
             <tbody class="divide-y divide-border">
@@ -99,7 +99,7 @@ const link = (a?: typeof appendix) =>
     )
   }
 
-  <p class="mt-24 border-t border-ink pt-6">All works in Part II were made by me without AI tools.</p>
+  <p class="mt-16 border-t border-rule pt-5 text-muted">All works in Part II were made by me without AI tools.</p>
 
   <PrevNext prev={link(prev)} next={link(next)} back={{ href: '/appendices', label: '↑ All appendices' }} />
 </Layout>

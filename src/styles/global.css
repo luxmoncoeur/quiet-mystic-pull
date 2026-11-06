@@ -1,7 +1,9 @@
 @import "tailwindcss";
 @import "@fontsource/instrument-serif/400.css";
 @import "@fontsource/instrument-serif/400-italic.css";
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/newsreader/opsz.css";
+@import "@fontsource-variable/newsreader/opsz-italic.css";
+@import "@fontsource-variable/geist";
 @import "@fontsource/ibm-plex-mono/400.css";
 @import "@fontsource/ibm-plex-mono/500.css";
 
@@ -76,6 +78,8 @@
   --color-border: var(--border);
   --color-muted: var(--muted);
   --color-ink: var(--ink);
+  /* Hairline for dividers: a soft mix of ink into the page, so rules don't shout. */
+  --color-rule: color-mix(in srgb, var(--ink) 26%, var(--bg));
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-accent-soft-text: var(--accent-soft-text);
@@ -86,7 +90,9 @@
 
 @theme {
   --font-display: "Instrument Serif", ui-serif, Georgia, serif;
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  /* Reading text: a screen serif with optical sizes. UI bits (cards) use Geist. */
+  --font-body: "Newsreader Variable", ui-serif, Georgia, serif;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
 
@@ -94,9 +100,10 @@
   html {
     background-color: var(--color-bg);
     color: var(--color-ink);
-    font-family: var(--font-sans);
-    /* Body text is 18px, above the 17px minimum. */
-    font-size: 112.5%;
+    font-family: var(--font-body);
+    font-optical-sizing: auto;
+    /* Body text is 17px, the minimum. */
+    font-size: 106.25%;
     line-height: 1.6;
     -webkit-text-size-adjust: 100%;
   }
@@ -164,10 +171,63 @@
     text-wrap: balance;
   }
   .display-xl {
-    font-size: clamp(2.6rem, 10.5vw, 8rem);
+    font-size: clamp(2.5rem, 7.5vw, 6rem);
   }
   .display-lg {
-    font-size: clamp(2.4rem, 8.5vw, 6rem);
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+  }
+
+  /* Gilded frame for artworks on the gallery wall (Part I): a gold moulding
+     built from gradients, with a bevel highlight, a dark inner lip, and a cream
+     mat around the picture. Same in both themes, like a real frame.
+     Markup: <span class="gilt"><span class="gilt-mat"><img></span></span> */
+  .gilt {
+    --gilt-pad: clamp(0.5rem, 1.1vw, 0.9rem);
+    position: relative;
+    display: block;
+    padding: var(--gilt-pad);
+    background:
+      linear-gradient(135deg, rgb(255 244 210 / 0.35), transparent 30%, transparent 70%, rgb(60 35 5 / 0.35)),
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.05) 0 2px, transparent 2px 5px),
+      linear-gradient(135deg, #6f4e1c 0%, #c9a24e 14%, #f0d58c 28%, #a77d32 44%, #e6c776 60%, #8a6526 78%, #d9b765 92%, #5e4217 100%);
+    box-shadow:
+      inset 0 0 0 1px rgb(40 22 0 / 0.55),
+      inset 1px 1px 0 2px rgb(255 238 190 / 0.35),
+      0 1px 2px rgb(0 0 0 / 0.3),
+      0 22px 40px -24px rgb(0 0 0 / 0.55);
+  }
+  /* the carved inner lip */
+  .gilt::before {
+    content: '';
+    position: absolute;
+    inset: calc(var(--gilt-pad) - 4px);
+    border: 2px solid rgb(70 45 10 / 0.55);
+    box-shadow: inset 0 0 0 1px rgb(255 230 160 / 0.4);
+    pointer-events: none;
+  }
+  .gilt-mat {
+    display: block;
+    overflow: hidden;
+    padding: clamp(0.4rem, 1vw, 0.85rem);
+    background: #f3ede1;
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / 0.18),
+      inset 0 3px 8px rgb(0 0 0 / 0.22);
+  }
+  .gilt-mat > img {
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.12);
+  }
+
+  /* A long, thin museum-style arrow that stretches on hover (components/LongArrow). */
+  .long-arrow {
+    display: inline-block;
+    width: 3.5rem;
+    height: 0.75rem;
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .group:hover .long-arrow,
+  .group:focus-visible .long-arrow {
+    width: 5.5rem;
   }
 
   .prose-body > * + * {
@@ -272,7 +332,7 @@ body::after {
 }
 .dir-row .dir-thumb {
   opacity: 0;
-  transform: translateY(-50%) scale(0.96);
+  transform: translateX(0.75rem);
 }
 .dir-row:hover .dir-inner,
 .dir-row:focus-visible .dir-inner {
@@ -281,7 +341,7 @@ body::after {
 .dir-row:hover .dir-thumb,
 .dir-row:focus-visible .dir-thumb {
   opacity: 1;
-  transform: translateY(-50%) scale(1);
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

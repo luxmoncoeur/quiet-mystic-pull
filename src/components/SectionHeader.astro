@@ -6,14 +6,26 @@ interface Props {
   numeral: string;
   title: string;
   line?: string;
+  aside?: string[]; // two short lines set small at the right of the title, wide screens only
 }
 
-const { numeral, title, line } = Astro.props;
+const { numeral, title, line, aside } = Astro.props;
 ---
 
-<header class="pt-36 pb-16 sm:pt-44">
+<header class="pt-28 pb-10 sm:pt-32 sm:pb-12">
   <p class="label" data-reveal="fade">( {numeral} )</p>
-  <h1 data-split class="mt-6 display-xl font-display"><AccentTitle text={title} /></h1>
-  {line && <p class="mt-8 max-w-2xl" data-reveal>{line}</p>}
+  <div class="mt-4 flex items-end justify-between gap-10">
+    <h1 data-split class="display-xl font-display"><AccentTitle text={title} /></h1>
+    {
+      aside && (
+        <p class="label hidden shrink-0 pb-3 text-right leading-snug tracking-[0.08em] text-muted uppercase lg:block" data-reveal="fade">
+          {aside.map((l) => (
+            <span class="block">{l}</span>
+          ))}
+        </p>
+      )
+    }
+  </div>
+  {line && <p class="mt-5 max-w-2xl text-lg" data-reveal>{line}</p>}
   <slot />
 </header>

@@ -71,12 +71,12 @@ const json = JSON.stringify({
 
     <p class="label relative">( End of the hallway )</p>
     <div class="relative mt-6 h-px w-16 bg-ink/40"></div>
-    <p class="relative mt-8 max-w-6xl font-display text-6xl leading-[0.92] sm:text-8xl lg:text-[9rem]">
+    <p class="relative mt-8 max-w-6xl font-display text-[clamp(3rem,min(11vw,15svh),9rem)] leading-[0.92]">
       <AccentTitle text={site.title} />
     </p>
     <p class="relative mt-6 font-display text-xl italic sm:text-2xl">{site.subtitle}</p>
     <p class="label relative mt-6">{site.tagline}</p>
-    <p class="label absolute bottom-14 text-muted">Continue ↓</p>
+    <p class="label relative mt-10 text-muted">Continue ↓</p>
   </div>
 
   <script type="application/json" data-hallway-data set:html={json} />

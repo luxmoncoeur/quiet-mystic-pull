@@ -10,12 +10,12 @@ const { words, label = 'Art forms' } = Astro.props;
 const line = words.join(' · ');
 ---
 
-<div class="overflow-hidden border-y border-ink py-5" data-marquee>
+<div class="overflow-hidden border-y border-rule py-3" data-marquee>
   <p class="sr-only">{label}: {words.join(', ')}</p>
   <div
     aria-hidden="true"
     data-marquee-track
-    class="flex w-max gap-8 font-display text-3xl whitespace-nowrap italic will-change-transform sm:text-5xl"
+    class="flex w-max gap-8 font-display text-2xl whitespace-nowrap italic will-change-transform sm:text-4xl"
   >
     {[0, 1, 2, 3, 4, 5].map(() => <span>{line} ·</span>)}
   </div>
