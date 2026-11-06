@@ -5,10 +5,13 @@ import SkipLink from '../../components/SkipLink.astro';
 import { wings } from '../../data/site';
 import { getPart2, pad } from '../../lib/content';
 import AccentTitle from '../../components/AccentTitle.astro';
+import NextRoom from '../../components/NextRoom.astro';
+import { getEntry } from 'astro:content';
 
 const works = await getPart2();
 const wing = wings[2];
 const total = pad(works.length);
+const reflection = await getEntry('reflection', 'reflection');
 ---
 
 <Layout title={`Part ${wing.numeral}: ${wing.title}`} room={3}>
@@ -16,6 +19,7 @@ const total = pad(works.length);
     numeral={wing.numeral}
     title={wing.title}
     line={`${works.length} works, made for this portfolio, mostly in forms new to me.`}
+    aside={['Beyond the classroom', works.map((w) => w.data.type ?? w.data.title).join(' · ')]}
   >
     <div class="mt-8"><SkipLink href="#works" label="Skip animation →" /></div>
   </SectionHeader>
@@ -32,13 +36,13 @@ const total = pad(works.length);
               class="group flex h-full origin-top flex-col gap-5 border border-border bg-surface p-5 shadow-[0_-18px_40px_-20px_var(--shadow)] sm:p-8"
             >
               <div class="flex flex-wrap items-start justify-between gap-4">
-                <p class="font-display text-6xl leading-none sm:text-8xl">
+                <p class="font-display text-5xl leading-none sm:text-7xl">
                   <span class="text-accent">{pad(work.data.number)}</span> <span class="text-muted">/ {total}</span>
                 </p>
                 <span class="tag">{work.data.familiar ? 'Familiar practice' : 'New to me'}</span>
               </div>
               <div>
-                <h2 class="font-display text-4xl leading-tight transition-colors group-hover:text-accent sm:text-6xl"><AccentTitle text={work.data.title} /></h2>
+                <h2 class="font-display text-3xl leading-tight transition-colors group-hover:text-accent sm:text-5xl"><AccentTitle text={work.data.title} /></h2>
                 {work.data.type && <p class="label mt-2">{work.data.type}</p>}
               </div>
               <div class="min-h-[40svh] flex-1 overflow-hidden">
@@ -58,7 +62,10 @@ const total = pad(works.length);
     }
   </ol>
 
-  <a href="/reflection" data-reveal class="mt-32 block border-y border-ink py-12 text-center font-display text-4xl transition-colors duration-500 hover:border-accent hover:bg-accent hover:text-bg sm:text-6xl">
-    Continue to the Reflection →
-  </a>
+  {/* The next room: the reflection, with its cover photo in a small gilded frame. */}
+  {
+    reflection?.data.cover && (
+      <NextRoom href="/reflection" title={wings[3].title} note="A letter · 4 min read" items={[reflection.data.title ?? 'A letter', 'Then: a blank canvas', 'Now: the pull of the sea', 'Next: still building up']} image={reflection.data.cover} />
+    )
+  }
 </Layout>

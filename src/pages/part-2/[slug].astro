@@ -2,11 +2,13 @@
 import { render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import FactCard from '../../components/FactCard.astro';
-import PrevNext from '../../components/PrevNext.astro';
+import NextRoom from '../../components/NextRoom.astro';
+import { getEntry } from 'astro:content';
+import { wings } from '../../data/site';
 import VideoEmbed from '../../components/VideoEmbed.astro';
 import AccentTitle from '../../components/AccentTitle.astro';
 import Window from '../../components/Window.astro';
-import { getAppendices, getPart2, pad } from '../../lib/content';
+import { getAppendices, getPart2, pad, plain } from '../../lib/content';
 
 export async function getStaticPaths() {
   const works = await getPart2();
@@ -25,6 +27,7 @@ export async function getStaticPaths() {
 
 const { work, total, prev, next, appendix } = Astro.props;
 const { Content } = await render(work);
+const reflection = await getEntry('reflection', 'reflection');
 const [hero, ...gallery] = work.data.media;
 const style = work.data.gallery_style;
 const link = (w?: typeof work) => w && { href: `/part-2/${w.id}`, label: w.data.title };
@@ -76,7 +79,7 @@ const galleryClass = {
       </a>
       <div class="mt-8"></div>
       <p class="label" data-reveal="fade">{pad(work.data.number)} / {pad(total)}</p>
-      <h1 data-split class="mt-6 display-xl font-display"><AccentTitle text={work.data.title} /></h1>
+      <h1 data-split class="mt-4 display-xl font-display"><AccentTitle text={work.data.title} /></h1>
       {work.data.type && <p class="label mt-6" data-reveal="fade">{work.data.type}</p>}
       <div data-reveal class="mt-12">
         <Window title={`featured · ${work.id}`} sticker="featured">
@@ -87,7 +90,7 @@ const galleryClass = {
       </div>
     </header>
 
-    <div class="mt-24 grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+    <div class="mt-16 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-14">
       <div data-reveal><FactCard work={work.data} /></div>
 
       <div class="space-y-24">
@@ -119,7 +122,7 @@ const galleryClass = {
     <!-- THE JOURNEY: the rest of the collection, as windows -->
     {
       gallery.length > 0 && (
-        <section aria-labelledby="gallery-heading" class="mt-32">
+        <section aria-labelledby="gallery-heading" class="mt-20">
           <div class="flex flex-wrap items-baseline justify-between gap-4">
             <h2 id="gallery-heading" class="label" data-reveal="fade">
               ( The journey · {gallery.length} files )
@@ -167,7 +170,7 @@ const galleryClass = {
       )
     }
 
-    <div class="mt-32 space-y-24">
+    <div class="mt-20 space-y-16">
     {
       work.data.videos.length > 0 && (
         <section aria-labelledby="video-heading">
@@ -181,20 +184,52 @@ const galleryClass = {
       )
     }
 
-    <!-- PROOF LINK -->
-    {
-      appendix && (
-        <a
-          href={`/appendices/${appendix.data.number}`}
-          data-reveal
-          class="block border border-ink p-8 font-display text-3xl transition-colors duration-500 hover:border-accent hover:bg-accent hover:text-bg sm:text-5xl"
-        >
-          See the process evidence → Appendix {appendix.data.number}
-        </a>
-      )
-    }
     </div>
   </article>
 
-  <PrevNext prev={link(prev)} next={link(next)} back={{ href: '/part-2', label: '↑ Back to the wing' }} />
+  {/* End of the work: small links first (previous, the evidence, back), then the
+      next work as the big plaque, so moving on is the obvious tap. */}
+  <nav aria-label="More from this work" class="mt-16 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3 border-t border-rule pt-5">
+    {
+      prev ? (
+        <a href={`/part-2/${prev.id}`} class="group label">
+          <span class="text-muted">← Previous</span>{' '}
+          <span class="font-display text-lg transition-colors group-hover:text-accent">{plain(prev.data.title)}</span>
+        </a>
+      ) : (
+        <span />
+      )
+    }
+    {
+      appendix && (
+        <a href={`/appendices/${appendix.data.number}`} class="label underline underline-offset-4 transition-colors hover:text-accent">
+          Process evidence · Appendix {appendix.data.number} →
+        </a>
+      )
+    }
+    <a href="/part-2" class="label transition-colors hover:text-accent">↑ Back to the wing</a>
+  </nav>
+
+  {
+    next ? (
+      <NextRoom
+        href={`/part-2/${next.id}`}
+        word="Work"
+        title={next.data.title}
+        note={`${pad(next.data.number)} / ${pad(total)}`}
+        items={[next.data.type, next.data.medium, next.data.date].filter((x): x is string => Boolean(x))}
+        image={next.data.media[0]}
+      />
+    ) : (
+      reflection?.data.cover && (
+        <NextRoom
+          href="/reflection"
+          title={wings[3].title}
+          note="A letter"
+          items={[reflection.data.title ?? 'A letter']}
+          image={reflection.data.cover}
+        />
+      )
+    )
+  }
 </Layout>
