@@ -1,0 +1,41 @@
+---
+// Footer on every page: my name (links to About), the course line, every room
+// so you can jump anywhere from the bottom of a page, and back to top.
+import { extraPages, site, wings } from '../data/site';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const rooms = [...wings, ...extraPages];
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`));
+---
+
+<footer class="mx-auto max-w-7xl px-4 pb-24 sm:px-8 sm:pb-20">
+  <div class="grid gap-8 border-t border-rule pt-8 sm:grid-cols-[1fr_auto] sm:items-end">
+    <div>
+      <a href="/about" class="font-display text-3xl underline-offset-4 transition-colors hover:text-accent hover:underline">
+        {site.footer.name}<span class="sr-only">: about me</span>
+      </a>
+      <p class="label mt-2 text-muted">{site.footer.course} · {site.footer.section} · {site.footer.year}</p>
+    </div>
+
+    <nav aria-label="All rooms">
+      <ul class="label grid grid-cols-2 gap-x-8 gap-y-2 sm:flex sm:flex-wrap sm:justify-end sm:gap-x-6">
+        {
+          rooms.map((r) => (
+            <li>
+              <a
+                href={r.href}
+                aria-current={isCurrent(r.href) ? 'page' : undefined}
+                class="underline-offset-4 transition-colors hover:text-accent hover:underline aria-[current=page]:text-accent"
+              >
+                {r.href === '/' ? 'Entrance' : r.nav}
+              </a>
+            </li>
+          ))
+        }
+        <li class="col-span-2 sm:col-span-1">
+          <a href="#" class="underline-offset-4 transition-colors hover:text-accent hover:underline">Back to top ↑</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</footer>

@@ -26,8 +26,8 @@ export const site = {
 // counter, and the floor directory.
 export const wings = [
   { href: '/', numeral: '', nav: '', title: 'Entrance' },
-  { href: '/part-1', numeral: 'I', nav: 'I', title: 'My Art Appreciation *Journey*' },
-  { href: '/part-2', numeral: 'II', nav: 'II', title: 'My Artistic *Exploration*' },
+  { href: '/part-1', numeral: 'I', nav: 'Part I', title: 'My Art Appreciation *Journey*' },
+  { href: '/part-2', numeral: 'II', nav: 'Part II', title: 'My Artistic *Exploration*' },
   { href: '/reflection', numeral: 'III', nav: 'Reflection', title: 'Looking Forward: Who Am I *Becoming*?' },
   { href: '/appendices', numeral: 'IV', nav: 'Appendices', title: 'Appendices' },
 ] as const;

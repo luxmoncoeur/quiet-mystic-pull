@@ -152,16 +152,6 @@ const artForms = part2.map((w) => w.data.type ?? w.data.title);
 
   <Marquee words={artForms} label="Art forms tried" />
 
-  <!-- FOOTER / COLOPHON -->
-  <footer slot="after" class="mx-auto max-w-7xl border-t border-rule px-4 py-10 sm:px-8">
-    <div class="flex flex-col gap-6 sm:flex-row sm:justify-between">
-      <div>
-        <p class="font-display text-3xl">{site.footer.name}</p>
-        <p class="label mt-2">{site.footer.course} · {site.footer.section} · {site.footer.year}</p>
-      </div>
-      <a href="#site-title" class="label self-start underline-offset-4 transition-colors hover:text-accent hover:underline">Back to top ↑</a>
-    </div>
-  </footer>
 </Layout>
 
 <script>

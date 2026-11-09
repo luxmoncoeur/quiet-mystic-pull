@@ -76,7 +76,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
           <a
             href={w.href}
             aria-current={isCurrent(w.href) && (w.href !== '/' || path === '/') ? 'page' : undefined}
-            class="block font-display text-4xl transition-colors hover:text-accent"
+            class="block font-display text-4xl transition-colors hover:text-accent aria-[current=page]:text-accent"
           >
             {w.numeral && <span class="label mr-3 align-middle">( {w.numeral} )</span>}
             {plain(w.title)}

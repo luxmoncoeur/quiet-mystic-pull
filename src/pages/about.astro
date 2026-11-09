@@ -48,7 +48,7 @@ const trackUrl = (id: string) =>
   `https://open.spotify.com/track/${id}?context=${encodeURIComponent(`spotify:playlist:${about.songs.playlist}`)}`;
 
 const made = [
-  { src: '/art/part1/scribble-art.webp', alt: 'Scribble art of a deep sea in pen and blue oil pastel' },
+  { src: '/art/part2/digital-posters/hero.webp', alt: 'Now playing: Magnets by NIKI, a pubmat in deep red and blue' },
   { src: '/art/part1/coffee-painting.webp', alt: 'Coffee painting of a quiet shoreline' },
   { src: '/art/part2/crafting/hero.webp', alt: 'Bouquet of blue fuzzy-wire lilies' },
   { src: '/art/part1/painting.webp', alt: 'Mona Lisa reimagined in pastel pink and violet' },
@@ -191,7 +191,7 @@ const made = [
     </section>
 
     <!-- ON REPEAT: each song opens on Spotify in my playlist -->
-    <section class="cell flex flex-col sm:col-span-2" aria-labelledby="songs-heading" data-reveal>
+    <section class="cell tint-rose flex flex-col sm:col-span-2" aria-labelledby="songs-heading" data-reveal>
       <div class="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="songs-heading" class="label text-muted">Always on repeat · {about.songs.artist}</h2>
         <a
@@ -203,7 +203,7 @@ const made = [
           Full playlist ↗<span class="sr-only"> (opens Spotify in a new tab)</span>
         </a>
       </div>
-      <ol class="mt-3 flex flex-1 flex-col justify-around divide-y divide-border">
+      <ol class="mt-2 flex flex-1 flex-col justify-around divide-y divide-border">
         {
           about.songs.tracks.map((track, i) => (
             <li>
@@ -211,10 +211,10 @@ const made = [
                 href={trackUrl(track.id)}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="song group flex items-center gap-4 py-3"
+                class="song group flex items-center gap-4 py-2"
               >
                 <span class="label w-5 text-muted">{i + 1}</span>
-                <span class="flex-1 font-display text-4xl leading-tight transition-colors group-hover:text-accent">{track.title}</span>
+                <span class="flex-1 font-display text-3xl leading-tight transition-colors group-hover:text-accent">{track.title}</span>
                 {i === 0 && (
                   <span class="eq group-hover:hidden" role="img" aria-label="playing now">
                     <i />
@@ -233,7 +233,7 @@ const made = [
     </section>
 
     <!-- HYPERFIXATIONS: squishy toys. Hold to squash, let go to wobble. -->
-    <section class="cell flex flex-col" aria-labelledby="fix-heading" data-reveal>
+    <section class="cell tint-blue flex flex-col" aria-labelledby="fix-heading" data-reveal>
       <h2 id="fix-heading" class="label text-muted">Hyperfixations</h2>
       <ul class="mt-4 grid flex-1 grid-cols-2 place-items-center gap-3">
         {
@@ -258,15 +258,15 @@ const made = [
 
     <!-- THINGS I MADE -->
     <section class="cell overflow-hidden sm:col-span-2" aria-labelledby="made-heading" data-reveal>
-      <h2 id="made-heading" class="label text-muted">A few things I made · hover to fan them out</h2>
+      <h2 id="made-heading" class="label text-muted">A few things I made</h2>
       <div class="made-stage mt-2 flex justify-center">
         <BounceCards
           client:visible
           images={made}
-          containerWidth={600}
-          containerHeight={300}
-          cardSize={190}
-          spread={98}
+          containerWidth={540}
+          containerHeight={230}
+          cardSize={160}
+          spread={84}
           rotation={7}
           pushDistance={90}
           borderWidth={5}
@@ -277,13 +277,13 @@ const made = [
     </section>
 
     <!-- BADGE -->
-    <div class="cell grid place-items-center" data-reveal>
+    <div class="cell tint-rose grid place-items-center" data-reveal>
       <CircularText
         client:visible
         text="GEARTS * ART APPRECIATION * BSIT * "
         spinDuration={22}
         onHover="speedUp"
-        size={190}
+        size={160}
         fontSize={14}
         fontWeight={500}
         className="font-mono text-ink"
@@ -295,7 +295,7 @@ const made = [
     <!-- ELSEWHERE -->
     <section class="cell flex flex-col" aria-labelledby="links-heading" data-reveal>
       <h2 id="links-heading" class="label text-muted">Elsewhere</h2>
-      <ul class="mt-4 flex flex-1 flex-col justify-around gap-4">
+      <ul class="mt-3 flex flex-1 flex-col justify-around gap-3">
         {
           [...about.links, { label: 'Spotify', handle: 'on repeat', url: `https://open.spotify.com/playlist/${about.songs.playlist}` }].map((l) => (
             <li>
@@ -305,7 +305,7 @@ const made = [
                 rel="noopener noreferrer"
                 class="group block border-b border-ink pb-2 transition-colors hover:border-accent hover:text-accent"
               >
-                <span class="block font-display text-4xl leading-tight">{l.label} ↗</span>
+                <span class="block font-display text-3xl leading-tight">{l.label} ↗</span>
                 <span class="label text-muted group-hover:text-accent">
                   {l.handle}<span class="sr-only"> (opens in a new tab)</span>
                 </span>
@@ -512,6 +512,17 @@ const made = [
     background-color: var(--color-surface);
     border-radius: 1.25rem;
     padding: 1.25rem;
+  }
+
+  /* Light theme accents: a few cells pick up the Buzz rose and blue. */
+  :global(:root[data-mode='light']) .tint-rose {
+    background-color: color-mix(in srgb, var(--color-accent-soft) 55%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--color-accent) 22%, var(--color-border));
+  }
+
+  :global(:root[data-mode='light']) .tint-blue {
+    background-color: color-mix(in srgb, var(--color-secondary-soft) 70%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--color-secondary) 40%, var(--color-border));
   }
 
   :global(.chip) {
@@ -863,7 +874,7 @@ const made = [
   /* The fanned cards are fixed-size; shrink the stage on phones */
   @media (max-width: 639px) {
     .made-stage {
-      height: 170px;
+      height: 125px;
     }
     .made-stage :global(astro-island > div) {
       flex: none;
