@@ -10,9 +10,10 @@ familiar_reason: "What began as classwork became my visual identity as a designe
 note: "The logos on these pubmats belong to their organizations (FACTS, FSC, and the college). The designs are my own."
 gallery_style: masonry # masonry | contact-sheet | carousel | grid
 media:
-  # The featured piece (your latest pubmat) goes first; it's a placeholder until you add it.
+  # The featured piece: the latest pubmat, a "now playing" poster for NIKI's "Magnets".
   - src: /art/part2/digital-posters/hero.webp
-    alt: "(featured poster, to follow)"
+    alt: "'Now playing: Magnets by NIKI' poster in deep red and blue: a blurred, halftoned photo of an award ceremony under the lyric 'Like some kind of MAGNET, you're a mystic force', with justified lyric lines at the top and bottom, stepped navy word boxes, and 'again and again and again' in glowing script."
+    details: ["personal", "Photoshop", "Nov 2026"]
   # The journey: from class assignments, to FACTS, to FSC.
   - src: /art/part2/digital-posters/nstp-assignment.webp
     alt: "NSTP assignment poster: a sepia collage of old newspapers, a Philippine flag, and a magnifying glass, with the words Civic Consciousness and Solidarity in script."
@@ -49,17 +50,17 @@ media:
     details: ["FSC", "A.Y. 2026–2027"]
 process:
   - src: /art/part2/digital-posters/process-1.webp
-    alt: "(describe this stage)"
-    date: "(date)"
-    caption: "(one-line factual caption)"
+    alt: "Photoshop screenshot of the base layer: a photo of hands holding award plaques, heavily blurred and warped with a glass filter so only the red tie and plaques read as soft shapes."
+    date: "Nov 9, 2026"
+    caption: "Blurring the base photo: a glass filter and Gaussian blur turn an awards photo into mood instead of detail."
   - src: /art/part2/digital-posters/process-2.webp
-    alt: "(describe this stage)"
-    date: "(date)"
-    caption: "(one-line factual caption)"
+    alt: "Photoshop screenshot of the colour grade: the blurred photo now brick red at the top fading to deep blue at the bottom, with the gradient fill layers listed in the Layers panel."
+    date: "Nov 9, 2026"
+    caption: "Grading it to the Buzz album palette: gradient fills push the photo from brick red at the top to cobalt blue at the bottom."
   - src: /art/part2/digital-posters/process-3.webp
-    alt: "(describe this stage)"
-    date: "(date)"
-    caption: "(one-line factual caption)"
+    alt: "Photoshop screenshot of the poster nearly done: justified lyric lines, the stacked 'like some kind of MAGNET' headline, 'mystic force' in script, stepped word boxes and 'again and again', with layout guides showing."
+    date: "Nov 10, 2026"
+    caption: "Setting the type: justified lyric lines, a stacked headline, and a vertical light smear behind MAGNET, aligned to margin guides."
 ---
 
 What initially was a classwork project became my creative exploration: from Canva for FACTS, to Photoshop when I joined FSC, and Figma for other projects. This is a collection of materials used in my featured publication, as well as my experience as a designer through my organizations.
