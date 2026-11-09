@@ -57,13 +57,13 @@ The site is laid out like a museum. Each page is a room, visited in order.
 
 ## Highlights
 
-- 🖼️ **A museum, not a feed.** Works hang in gilded frames, each wing ends with a "Next Room" plaque, and a counter in the corner shows where you are.
-- 🌊 **One thread throughout.** Water and tides connect the class works, the explorations, and the reflection.
-- 🎵 **A letter with a song.** The reflection floats NIKI's "Tsunami" over the page, like a song sent with a letter.
-- 🎨 **The "Buzz" palette.** Brick red, dusty rose, cream, and cobalt blue, taken from NIKI's _Buzz_ album cover.
-- 🌗 **Light and dark themes.** Warm paper in the day, a night street after dark.
-- 📱 **Works on phones.** Every page was checked at phone size.
-- ♿ **Considerate by default.** Alt text on every image, keyboard navigation, and calmer motion when your device asks for reduced motion.
+- **A museum, not a feed.** Works hang in gilded frames, each wing ends with a "Next Room" plaque, and a counter in the corner shows where you are.
+- **One thread throughout.** Water and tides connect the class works, the explorations, and the reflection.
+- **A letter with a song.** The reflection floats NIKI's "Tsunami" over the page, like a song sent with a letter.
+- **The "Buzz" palette.** Brick red, dusty rose, cream, and cobalt blue, taken from NIKI's _Buzz_ album cover.
+- **Light and dark themes.** Warm paper in the day, a night street after dark.
+- **Works on phones.** Every page was checked at phone size.
+- **Considerate by default.** Alt text on every image, keyboard navigation, and calmer motion when your device asks for reduced motion.
 
 ## Tech Stack
 
