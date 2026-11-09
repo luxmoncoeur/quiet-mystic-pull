@@ -62,11 +62,11 @@ const link = (a?: typeof appendix) =>
   <!-- FILES AND LINKS (only when there are any) -->
   {
     data.links.length > 0 && (
-      <section aria-labelledby="links-heading" class="mt-16">
+      <section aria-labelledby="links-heading" class="mt-12">
         <h2 id="links-heading" class="label">( Files and links )</h2>
-        <ul class="mt-6 divide-y divide-border border-y border-rule">
+        <ul class="mt-4 divide-y divide-border">
           {data.links.map((l) => (
-            <li class="py-4">
+            <li class="py-3 first:pt-0">
               <a href={l.url} target="_blank" rel="noopener noreferrer" class="font-display text-2xl underline underline-offset-4 transition-colors hover:text-accent">
                 {l.label} ↗<span class="sr-only"> (opens in a new tab)</span>
               </a>
@@ -81,7 +81,7 @@ const link = (a?: typeof appendix) =>
   <!-- METADATA -->
   {
     data.metadata && (
-      <section aria-labelledby="meta-heading" class="mt-16">
+      <section aria-labelledby="meta-heading" class="mt-12">
         <h2 id="meta-heading" class="label">( Metadata )</h2>
         <div class="mt-6 overflow-x-auto" tabindex="0" role="region" aria-labelledby="meta-heading">
           <table class="w-full text-left">
@@ -99,7 +99,7 @@ const link = (a?: typeof appendix) =>
     )
   }
 
-  <p class="mt-16 border-t border-rule pt-5 text-muted">All works in Part II were made by me without AI tools.</p>
+  <p class="mt-10 text-muted">All works in Part II were made by me without AI tools.</p>
 
   <PrevNext prev={link(prev)} next={link(next)} back={{ href: '/appendices', label: '↑ All appendices' }} />
 </Layout>
